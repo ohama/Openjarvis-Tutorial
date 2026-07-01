@@ -107,6 +107,84 @@ cd /Users/ohama/projs/openjarvis-test/OpenJarvis
 > 봇이 응답하려면 Mac이 깨어 있어야 합니다. 상시 실행하려면 App Nap / 절전을
 > 비활성화하거나, 전원을 연결한 채 "절전 방지"를 켜 두세요.
 
+> ⚠️ **이 dev 빌드 참고:** `jarvis gateway start`가 만드는 `openjarvis.daemon.gateway`
+> 데몬은 아직 미완성 스텁이라 즉시 종료됩니다. 채널을 실제로 구동하려면 아래 5단계처럼
+> **`jarvis serve`** 를 사용하세요 — `[channel] enabled=true`이면 API 서버와 함께 Telegram
+> 채널을 connect 하고 `uvicorn`으로 블로킹 상태로 떠 있습니다.
+
+---
+
+## 5단계 — launchd 서비스로 상시 운영 (재부팅에도 자동)
+
+로그인할 때 봇을 자동으로 띄우고 프로세스가 죽어도 자동 복구하려면 launchd 사용자
+에이전트(LaunchAgent)로 등록합니다. 서비스 실행 명령은 (스텁인 `daemon.gateway` 대신)
+채널을 실제로 구동하는 **`jarvis serve`** 를 사용합니다.
+
+`~/Library/LaunchAgents/com.openjarvis.gateway.plist` 를 아래처럼 만듭니다
+(경로·`HOME`은 본인 환경에 맞게 수정):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.openjarvis.gateway</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/ohama/projs/openjarvis-test/OpenJarvis/.venv/bin/jarvis</string>
+        <string>serve</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/ohama/projs/openjarvis-test/OpenJarvis</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/ohama</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/ohama/.openjarvis/gateway.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/ohama/.openjarvis/gateway.err.log</string>
+</dict>
+</plist>
+```
+
+로드 및 관리:
+
+```bash
+launchctl load   ~/Library/LaunchAgents/com.openjarvis.gateway.plist   # 시작(+ 자동시작 등록)
+launchctl list | grep openjarvis                                       # 첫 칸에 PID 있으면 실행 중
+launchctl unload ~/Library/LaunchAgents/com.openjarvis.gateway.plist   # 중지 및 해제
+```
+
+- `RunAtLoad`: **로그인 시** 자동 시작 (부팅 직후 로그인 전에는 아님). `KeepAlive`: 크래시 시 자동 재시작.
+- **폴링 인스턴스는 하나만.** 서비스가 도는 동안 `jarvis serve`를 또 실행하면 Telegram이
+  `409 Conflict`를 냅니다.
+
+### Telegram 연결 검증
+
+```bash
+# 1) 프로세스 생존 + 포트 리슨
+launchctl list | grep openjarvis
+lsof -iTCP:8090 -sTCP:LISTEN -n -P
+
+# 2) 로그에서 채널 연결 확인 (rich 콘솔 출력은 err 로그로 감)
+grep -E "Channel:|Uvicorn running|startup complete" ~/.openjarvis/gateway.err.log
+#   → "Channel: telegram", "Model:  qwen-122b", "Uvicorn running on http://127.0.0.1:8090"
+
+# 3) 봇 자체 생존 확인 (BotFather 토큰 사용)
+curl -s "https://api.telegram.org/bot<봇토큰>/getMe"
+#   → {"ok":true,"result":{"username":"<your_bot>", ...}}
+```
+
+마지막으로 아이폰 Telegram에서 봇에게 메시지를 보내 로컬 `qwen-122b`가 답하면 상시 서비스
+구성이 끝난 것입니다.
+
 ---
 
 ## 사용하기

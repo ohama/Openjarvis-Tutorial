@@ -106,6 +106,85 @@ Verify the channel itself connected:
 > The Mac must stay awake for the bot to respond. For always-on use, disable App Nap /
 > sleep, or keep it plugged in with "prevent sleeping" on.
 
+> ⚠️ **This dev build:** `jarvis gateway start` generates a plist that runs
+> `openjarvis.daemon.gateway`, but that module is still an incomplete stub and exits
+> immediately. To actually run the channel, use **`jarvis serve`** as shown in Step 5 —
+> when `[channel] enabled = true`, `serve` connects the Telegram channel alongside the
+> API server and stays up (blocking) under `uvicorn`.
+
+---
+
+## Step 5 — Run it as a launchd service (always-on, survives reboot)
+
+To auto-start the bot at login and auto-restart it if the process dies, register a
+launchd user agent (LaunchAgent). Use **`jarvis serve`** as the service command (not the
+stub `daemon.gateway`), since it actually brings up the channel.
+
+Create `~/Library/LaunchAgents/com.openjarvis.gateway.plist` (adjust the paths and
+`HOME` for your environment):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.openjarvis.gateway</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/ohama/projs/openjarvis-test/OpenJarvis/.venv/bin/jarvis</string>
+        <string>serve</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/ohama/projs/openjarvis-test/OpenJarvis</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOME</key>
+        <string>/Users/ohama</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/Users/ohama/.openjarvis/gateway.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/ohama/.openjarvis/gateway.err.log</string>
+</dict>
+</plist>
+```
+
+Load and manage it:
+
+```bash
+launchctl load   ~/Library/LaunchAgents/com.openjarvis.gateway.plist   # start (+ enable at login)
+launchctl list | grep openjarvis                                       # a PID in col 1 = running
+launchctl unload ~/Library/LaunchAgents/com.openjarvis.gateway.plist   # stop and unregister
+```
+
+- `RunAtLoad`: starts **at login** (not at boot before you log in). `KeepAlive`: restarts on crash.
+- **Only one poller.** If you run `jarvis serve` again while the service is up, Telegram
+  returns `409 Conflict`.
+
+### Verify the Telegram connection
+
+```bash
+# 1) Process alive + port listening
+launchctl list | grep openjarvis
+lsof -iTCP:8090 -sTCP:LISTEN -n -P
+
+# 2) Confirm the channel connected in the log (rich console output goes to the err log)
+grep -E "Channel:|Uvicorn running|startup complete" ~/.openjarvis/gateway.err.log
+#   → "Channel: telegram", "Model:  qwen-122b", "Uvicorn running on http://127.0.0.1:8090"
+
+# 3) Confirm the bot itself is alive (using your BotFather token)
+curl -s "https://api.telegram.org/bot<BOT_TOKEN>/getMe"
+#   → {"ok":true,"result":{"username":"<your_bot>", ...}}
+```
+
+Finally, message the bot from Telegram on your iPhone — if local `qwen-122b` replies,
+the always-on service is complete.
+
 ---
 
 ## Using it
