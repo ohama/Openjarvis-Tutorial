@@ -1,0 +1,2060 @@
+<!DOCTYPE HTML>
+<html lang="ko" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>OpenJarvis Tutorial</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Apple Silicon(M4 Max)에서 로컬 Qwen(122B/35B) + LiteLLM으로 OpenJarvis를 구축·운용하는 실전 튜토리얼">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-0392ca55.css">
+        <link rel="stylesheet" href="css/chrome-fc474251.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-93084edc.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-d0e53a3e.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">OpenJarvis Tutorial</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/ohama/Openjarvis-Tutorial" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="openjarvis-tutorial"><a class="header" href="#openjarvis-tutorial">OpenJarvis Tutorial</a></h1>
+<p>Apple Silicon(M4 Max, 128GB) 맥에서 <strong>로컬 Qwen(122B / 35B)</strong> 모델을 <strong>LiteLLM + MLX</strong>
+스택으로 서빙하고, 그 위에 <strong>OpenJarvis</strong> 로컬 우선(local-first) AI 에이전트를 구축·운용하는
+실전 튜토리얼입니다. 설치부터 사용법, Telegram으로 아이폰에서 쓰기, 대안 프레임워크 비교까지
+직접 검증한 절차만 담았습니다.</p>
+<blockquote>
+<p>이 문서는 한국어와 영어 두 가지 버전을 함께 제공합니다. 왼쪽 목차에서 언어 섹션을 선택하세요.
+This book is available in both Korean and English — pick a language section in the sidebar.</p>
+</blockquote>
+<h2 id="무엇을-다루나-whats-inside"><a class="header" href="#무엇을-다루나-whats-inside">무엇을 다루나 (What’s inside)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>#</th><th>장</th><th>내용</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td><strong>설치 및 설정</strong></td><td>Ollama 없이 pip으로 OpenJarvis 설치, 로컬 Qwen에 연결 (왜 그렇게 하는지 포함)</td></tr>
+<tr><td>2</td><td><strong>로컬 LLM 스택 레퍼런스</strong></td><td>LiteLLM → Qwen 122B/35B(MLX) 엔드포인트 — OpenAI 호환 앱이면 이 문서만으로 연결 가능</td></tr>
+<tr><td>3</td><td><strong>사용법</strong></td><td><code>jarvis ask</code>/<code>chat</code>, 에이전트·도구·메모리, 서버 모드, <strong>“아이폰에서 쓸 수 있나요?”</strong></td></tr>
+<tr><td>4</td><td><strong>Telegram 채널 설정</strong></td><td>텔레그램 봇으로 아이폰에서 로컬 Qwen과 대화하기 (설정 + 사용법)</td></tr>
+<tr><td>5</td><td><strong>에이전트 프레임워크 비교</strong></td><td>OpenJarvis vs. OpenHands vs. GSD vs. LangGraph 상세 비교</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="이-튜토리얼의-대상-환경-target-environment"><a class="header" href="#이-튜토리얼의-대상-환경-target-environment">이 튜토리얼의 대상 환경 (Target environment)</a></h2>
+<ul>
+<li><strong>하드웨어:</strong> Apple M4 Max, 128 GB RAM, macOS, arm64</li>
+<li><strong>서빙:</strong> <code>mlx_lm.server</code>(MLX) 백엔드 + <strong>LiteLLM</strong> 프록시(<code>http://localhost:4000/v1</code>)</li>
+<li><strong>모델:</strong> <code>qwen-122b</code>(고품질) / <code>qwen-35b</code>(빠름)</li>
+</ul>
+<h2 id="시작하기-get-started"><a class="header" href="#시작하기-get-started">시작하기 (Get started)</a></h2>
+<p><a href="#openjarvis-설치--apple-siliconm4-max에서-로컬-qwen-122b-구동">1. 설치 및 설정</a>부터 시작하세요.
+Prefer English? Start with <a href="#openjarvis-setup--local-qwen-122b-on-apple-silicon-m4-max">1. Setup</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openjarvis-설치--apple-siliconm4-max에서-로컬-qwen-122b-구동"><a class="header" href="#openjarvis-설치--apple-siliconm4-max에서-로컬-qwen-122b-구동">OpenJarvis 설치 — Apple Silicon(M4 Max)에서 로컬 qwen-122b 구동</a></h1>
+<p>OpenJarvis를 설치하고, 이미 <strong>LiteLLM 프록시 + MLX</strong> 스택을 통해 서비스되고 있는
+<strong>로컬 Qwen</strong> 모델에 연결하기 위한 재현 가능한 가이드입니다. 모든 단계에는 <em>이유</em>가
+포함되어 있어, 환경이 다를 경우 이를 참고해 적절히 조정할 수 있습니다.</p>
+<ul>
+<li><strong>머신:</strong> Apple M4 Max, 128 GB, macOS 26.x, arm64</li>
+<li><strong>목표:</strong> OpenJarvis 에이전트를 로컬 <code>qwen-122b</code>에서 구동 (Ollama 없이, 클라우드 없이)</li>
+<li><strong>결과:</strong> 정상 동작 확인됨 (<code>jarvis ask</code>가 로컬 모델을 통해 올바른 답변을 반환함)</li>
+</ul>
+<hr>
+<h2 id="0-사전-요구-사항--이미-실행-중이어야-하는-llm-스택"><a class="header" href="#0-사전-요구-사항--이미-실행-중이어야-하는-llm-스택">0. 사전 요구 사항 — 이미 실행 중이어야 하는 LLM 스택</a></h2>
+<p>이 가이드는 이미 자체 추론 스택을 운영하고 있다고 가정합니다(여기서 설치하지 않았으며,
+OpenJarvis를 여기에 연결하기만 했습니다). 참고로 제 환경은 다음과 같습니다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>포트</th><th>프로세스</th><th>역할</th></tr>
+</thead>
+<tbody>
+<tr><td><code>:4000</code></td><td><code>litellm --config agent-stack/litellm/config.yaml</code></td><td>OpenAI 호환 <strong>프록시 / 라우터</strong> (진입점)</td></tr>
+<tr><td><code>:8000</code></td><td><code>mlx_lm.server --model .../qwen36-35b</code></td><td>35B 백엔드</td></tr>
+<tr><td><code>:8001</code></td><td><code>mlx_lm.server --model .../qwen122b</code></td><td>122B 백엔드</td></tr>
+<tr><td><code>:8011</code> / <code>:8012</code></td><td><code>role_shim.py</code></td><td>MLX를 위한 시스템 메시지 순서 정규화</td></tr>
+<tr><td><code>:8082</code></td><td><code>claude-code-proxy</code></td><td>Anthropic→chat 브리지 (OpenJarvis와 무관)</td></tr>
+</tbody>
+</table>
+</div>
+<p>LiteLLM 프록시는 다음 모델 **별칭(alias)**을 노출합니다: <code>qwen-122b</code>, <code>qwen-35b</code>,
+<code>qwen-local</code>, <code>qwen-122b-codex</code>, <code>qwen-122b-claude</code>, <code>qwen-35b-claude</code>.</p>
+<p><strong>OpenJarvis를 건드리기 전에 스택이 정상 동작 중인지 확인하세요:</strong></p>
+<pre><code class="language-bash"># 프록시가 노출하는 모델 목록 확인
+curl -s http://127.0.0.1:4000/v1/models | python3 -m json.tool
+
+# 모델이 실제로 응답하는지 확인
+curl -s http://127.0.0.1:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-122b","messages":[{"role":"user","content":"say OK"}],"max_tokens":5}'
+</code></pre>
+<p><em>먼저 확인하는 이유:</em> OpenJarvis는 단지 클라이언트일 뿐입니다. <code>:4000</code>이 여기서 응답하지
+않으면 그 하위의 어떤 것도 동작하지 않으며, 엉뚱한 계층을 디버깅하느라 시간을 낭비하게 됩니다.</p>
+<hr>
+<h2 id="1-두-가지-설계-결정-이해하기-설치-전에-읽어-보세요"><a class="header" href="#1-두-가지-설계-결정-이해하기-설치-전에-읽어-보세요">1. 두 가지 설계 결정 이해하기 (설치 전에 읽어 보세요)</a></h2>
+<p>OpenJarvis에는 플러그인 방식의 “엔진” 계층이 있습니다. 연결 방식은 서로 독립적인 두 가지
+선택으로 정의됩니다:</p>
+<h3 id="결정-a--원시-mlx8001가-아니라-litellm-프록시4000에-연결"><a class="header" href="#결정-a--원시-mlx8001가-아니라-litellm-프록시4000에-연결">결정 A — 원시 MLX(<code>:8001</code>)가 아니라 LiteLLM 프록시(<code>:4000</code>)에 연결</a></h3>
+<p>OpenJarvis를 MLX에 직접 연결하지 않고 <strong>프록시</strong>를 가리키게 합니다.</p>
+<p><em>이유:</em> 프록시는 이미 진입점 역할을 합니다. 프록시를 거치면 OpenJarvis가 깔끔한 별칭
+(<code>qwen-122b</code>, <code>qwen-35b</code>)과 <code>role_shim</code> 라우팅을 재사용할 수 있습니다. 한 단어짜리 폴백
+모델을 사용할 수 있고, 문자열 하나만 바꾸면 role-shim으로 보호되는 별칭으로 전환할 수
+있습니다. <code>:8001</code>에 직접 연결하면 모델의 <strong>파일 시스템 경로</strong>를 이름으로 하드코딩해야 하고,
+직접 구축한 계층을 우회하게 됩니다.</p>
+<h3 id="결정-b--openai-호환-엔진-선택"><a class="header" href="#결정-b--openai-호환-엔진-선택">결정 B — “OpenAI 호환” 엔진 선택</a></h3>
+<p>OpenJarvis에서 <code>vllm</code>, <code>sglang</code>, <code>llamacpp</code>, <code>mlx</code>, <code>lmstudio</code> 등의 엔진은 <strong>동일한
+코드</strong>입니다. 각 엔진은 그저 <code>{host}/v1/chat/completions</code>에 POST 요청을 보낼 뿐입니다.
+이름은 기본 포트와 라벨만 바꿀 뿐, <strong>vLLM이나 MLX를 실행하지는 않습니다.</strong></p>
+<p><em><code>mlx</code>를 쓰는 이유:</em> 백엔드가 실제로 MLX이므로, 정직한 라벨로서 <code>[engine.mlx]</code>를
+사용합니다. (<code>vllm</code>도 동일하게 동작합니다 — 이름은 표면적인 것일 뿐입니다 — 그러나 <code>mlx</code>가
+더 명확합니다.) 진정으로 범용적인 <code>openai-compat</code> 엔진도 존재하지만 <code>config.toml</code>에서는
+<strong>선택할 수 없으므로</strong>(오직 <code>jarvis eval --base-url</code>을 통해서만 가능), 등록된 이름 하나를
+빌려 씁니다.</p>
+<blockquote>
+<p>전체 흐름: <code>OpenJarvis → 범용 OpenAI HTTP 클라이언트 → LiteLLM :4000 → MLX :8001</code></p>
+</blockquote>
+<hr>
+<h2 id="2-저장소-클론"><a class="header" href="#2-저장소-클론">2. 저장소 클론</a></h2>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test
+git clone --depth 1 https://github.com/open-jarvis/OpenJarvis.git
+cd OpenJarvis
+</code></pre>
+<p><em>한 줄짜리 설치 스크립트</em>(<code>curl … install.sh | bash</code>)<em>를 쓰지 않는 이유:</em> 이 스크립트는
+<strong>Ollama</strong>를 설치하고 스타터 모델을 내려받습니다. 이미 더 나은 로컬 스택(MLX)이 있으므로
+그 단계는 불필요하며, 경쟁하는 모델 서버를 추가하게 됩니다. pip 패키지를 직접 설치하면
+그 모든 과정을 건너뛸 수 있습니다.</p>
+<hr>
+<h2 id="3-uv로-python-313-가상환경venv-생성"><a class="header" href="#3-uv로-python-313-가상환경venv-생성">3. uv로 Python 3.13 가상환경(venv) 생성</a></h2>
+<pre><code class="language-bash">uv venv --python 3.13 .venv
+</code></pre>
+<p><em>특별히 3.13을 쓰는 이유:</em> OpenJarvis는 <code>python &gt;=3.10,&lt;3.14</code>를 요구합니다. 여기 시스템
+Python은 <strong>3.14</strong>로 <em>너무 최신</em>이라 실패합니다. <code>uv</code>는 호환되는 3.13 인터프리터를
+내려받아 시스템 Python은 건드리지 않고 venv에 고정합니다.</p>
+<hr>
+<h2 id="4-패키지-설치-base--server-extra"><a class="header" href="#4-패키지-설치-base--server-extra">4. 패키지 설치 (base + server extra)</a></h2>
+<pre><code class="language-bash">VIRTUAL_ENV=.venv uv pip install -e ".[server]"
+</code></pre>
+<p><em><code>[server]</code>만 쓰고 더 무거운 것은 쓰지 않는 이유:</em></p>
+<ul>
+<li><strong>Base</strong> 의존성은 순수 Python이며 이미 <code>openai</code> 클라이언트를 포함합니다 — OpenAI 호환
+엔진에 필요한 것은 그게 전부입니다. 따라서 base 설치만으로도 <code>jarvis ask</code>가 동작합니다.</li>
+<li>**<code>server</code>**는 FastAPI/uvicorn을 추가하여, 이후 <code>jarvis serve</code> / 데스크톱 앱을 실행할
+수 있게 합니다.</li>
+<li><strong><code>desktop</code></strong> extra는 일부러 피했습니다. 이것만이 <strong>Rust</strong> 확장(<code>openjarvis-rust</code>)을
+가져와 컴파일을 유발합니다. CLI 사용에는 필요하지 않습니다.</li>
+<li>웹 검색 도구를 사용하는 경우에만 나중에 <code>tools-search</code>를 추가하세요
+(<code>".[server,tools-search]"</code>).</li>
+</ul>
+<hr>
+<h2 id="5-설정-작성-및-설치"><a class="header" href="#5-설정-작성-및-설치">5. 설정 작성 및 설치</a></h2>
+<p>OpenJarvis는 <code>~/.openjarvis/config.toml</code>을 읽습니다. 다음 파일을 생성하세요:</p>
+<pre><code class="language-toml"># OpenJarvis 설정 — LiteLLM 프록시(:4000)를 통해 로컬 qwen-122b에 연결됨
+
+[intelligence]
+default_model = "qwen-122b"       # LiteLLM 별칭 -&gt; mlx qwen122b (:8001)
+fallback_model = "qwen-35b"       # 더 가볍고 빠른 폴백 (:8000)
+preferred_engine = "mlx"          # OpenAI 호환 클라이언트 (host는 아래에서 :4000을 가리킴)
+provider = "local"
+quantization = "none"
+temperature = 0.2
+max_tokens = 4096
+top_p = 0.9
+
+[agent]
+default_agent = "orchestrator"    # 도구 선택이 가능한 멀티턴 방식
+max_turns = 10
+context_from_memory = true
+
+[tools]
+enabled = ["code_interpreter", "file_read", "file_write", "shell_exec", "web_search", "think", "calculator"]
+
+[tools.storage]
+default_backend = "sqlite"
+db_path = "~/.openjarvis/memory.db"
+
+[tools.mcp]
+enabled = true
+
+[engine]
+default = "mlx"                   # OpenAI 호환 엔진 이름이면 무엇이든 동작함; mlx가 정직한 라벨
+
+[engine.mlx]
+host = "http://localhost:4000"    # &lt;-- 원시 mlx :8001이 아니라 LiteLLM 프록시
+# 프록시는 현재 클라이언트 키 없이 요청을 받습니다. 이후 LiteLLM 마스터 키를 활성화한다면,
+# 하드코딩하지 말고 export하세요:  export MLX_API_KEY="sk-..."
+# (환경 변수 = &lt;ENGINE_ID&gt;_API_KEY, 대문자로)
+
+[server]
+host = "127.0.0.1"
+port = 8090                       # :8000에서 옮김 — 이유는 아래 참고
+
+[traces]
+enabled = true
+db_path = "~/.openjarvis/traces.db"
+</code></pre>
+<p>설치:</p>
+<pre><code class="language-bash">mkdir -p ~/.openjarvis
+cp config.toml ~/.openjarvis/config.toml
+</code></pre>
+<p><em>이 값들을 쓰는 이유:</em></p>
+<ul>
+<li><strong><code>host = :4000</code></strong> — 결정 A. 모든 것을 프록시를 통해 보냅니다.</li>
+<li><strong><code>default_model = "qwen-122b"</code></strong> — 경로가 아니라 프록시 별칭. 깔끔하고 교체하기 쉽습니다.</li>
+<li><strong><code>fallback_model = "qwen-35b"</code></strong> — 동작하는 별칭이므로, 성능 저하가 부드럽게 이루어집니다.</li>
+<li><strong><code>[server] port = 8090</code></strong> — OpenJarvis 기본값은 <code>8000</code>인데, 이는 <strong><code>:8000</code>의
+<code>mlx_lm.server</code>와 충돌합니다.</strong> 포트를 옮기면 시작 시 포트 충돌을 방지할 수 있습니다.</li>
+<li><strong>API 키 없음</strong> — 0단계에서 프록시가 인증되지 않은 호출을 받아들였습니다.
+<code>agent-stack/litellm/config.yaml</code> 안의 키는 프록시→MLX 전용이며, 클라이언트에는
+필요하지 않습니다.</li>
+</ul>
+<hr>
+<h2 id="6-설정이-의도대로-로드되는지-확인"><a class="header" href="#6-설정이-의도대로-로드되는지-확인">6. 설정이 의도대로 로드되는지 확인</a></h2>
+<pre><code class="language-bash">.venv/bin/jarvis config show
+</code></pre>
+<p>예상 결과: <code>Default Engine: mlx</code>, <code>Default Model: qwen-122b</code>,
+<code>Fallback Model: qwen-35b</code>, <code>Default Agent: orchestrator</code>.</p>
+<p><em>이유:</em> 답변이 올바른지에 의존하기 <strong>전에</strong>, OpenJarvis가 파일을 파싱하고 엔진/모델을
+해석했는지 확인합니다. (<code>jarvis doctor</code>는 더 심층적인 진단을 수행합니다.)</p>
+<hr>
+<h2 id="7-스모크-테스트"><a class="header" href="#7-스모크-테스트">7. 스모크 테스트</a></h2>
+<pre><code class="language-bash"># 7a. 가장 단순한 단일 턴 에이전트로 모델 경로를 분리해 확인
+.venv/bin/jarvis ask --agent simple "Reply with exactly this and nothing else: JARVIS-WIRED-OK"
+
+# 7b. 추론 작업으로 설정된 기본값(orchestrator)을 실행
+.venv/bin/jarvis ask "What is 17 * 23? Reply with just the number."
+</code></pre>
+<p>예상 결과: <code>JARVIS-WIRED-OK</code>, 그다음 <code>391</code>.</p>
+<p><em>두 가지 테스트를 하는 이유:</em> 7a는 원시 <strong>엔진→프록시→모델</strong> 경로를 단독으로 검증합니다
+(도구 없이, 멀티턴 없이) — 실패한다면 문제는 연결이지 에이전트가 아닙니다. 7b는 실제로
+설정한 <strong>기본 에이전트</strong>가 처음부터 끝까지(end-to-end) 동작함을 검증합니다.</p>
+<hr>
+<h2 id="8-일상적인-사용"><a class="header" href="#8-일상적인-사용">8. 일상적인 사용</a></h2>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test/OpenJarvis
+.venv/bin/jarvis ask "..."      # 일회성
+.venv/bin/jarvis chat           # 대화형 세션
+.venv/bin/jarvis serve          # :8090에서 HTTP API ([server] extra 필요)
+</code></pre>
+<p>선택적 편의 설정 — venv를 활성화하거나 PATH에 추가하면 그냥 <code>jarvis</code>만 입력할 수 있습니다:</p>
+<pre><code class="language-bash">source .venv/bin/activate       # 셸별로
+# 또는 심볼릭 링크: ln -s "$PWD/.venv/bin/jarvis" ~/bin/jarvis
+</code></pre>
+<hr>
+<h2 id="문제-해결"><a class="header" href="#문제-해결">문제 해결</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>증상</th><th>원인</th><th>해결</th></tr>
+</thead>
+<tbody>
+<tr><td>Python 버전에서 <code>jarvis</code> 설치 실패</td><td>시스템 Python이 ≥3.14</td><td>venv 재생성: <code>uv venv --python 3.13 .venv</code> (3단계)</td></tr>
+<tr><td>연결 거부 / 엔진에 도달 불가</td><td>LiteLLM <code>:4000</code> 또는 MLX 백엔드가 중단됨</td><td>0단계 <code>curl</code> 확인을 다시 실행; 스택 재시작</td></tr>
+<tr><td><code>System message must be at the beginning</code> (MLX 오류)</td><td>어떤 에이전트가 대화 중간에 시스템 메시지를 삽입했으며, 일반 <code>qwen-122b</code>는 role-shim을 건너뜀</td><td><code>default_model = "qwen-122b-claude"</code>로 설정 (<code>:8011</code>의 role-shim을 경유)</td></tr>
+<tr><td>서버가 시작되지 않음 / 포트 사용 중</td><td><code>:8000</code>이 <code>mlx_lm.server</code>와 충돌</td><td><code>[server] port = 8090</code>인지 확인 (5단계)</td></tr>
+<tr><td><code>web_search</code> 도구 오류</td><td>검색 extra가 설치되지 않음</td><td><code>VIRTUAL_ENV=.venv uv pip install -e ".[server,tools-search]"</code></td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="설치변경된-항목-정리-또는-감사용"><a class="header" href="#설치변경된-항목-정리-또는-감사용">설치/변경된 항목 (정리 또는 감사용)</a></h2>
+<ul>
+<li>저장소 클론: <code>/Users/ohama/projs/openjarvis-test/OpenJarvis</code> (~144 MB)</li>
+<li>가상환경: 그 안의 <code>.venv</code> (Python 3.13.13, uv로 프로비저닝됨)</li>
+<li>설정: <code>~/.openjarvis/config.toml</code></li>
+<li>런타임 상태 (사용 시 생성됨): <code>~/.openjarvis/memory.db</code>, <code>~/.openjarvis/traces.db</code></li>
+<li><strong>변경하지 않음:</strong> LiteLLM/MLX 스택, 시스템 Python, Ollama (설치한 적 없음)</li>
+</ul>
+<p>OpenJarvis를 완전히 제거하려면: 클론 디렉터리와 <code>~/.openjarvis/</code>를 삭제하세요.</p>
+<hr>
+<h2 id="버전-참고"><a class="header" href="#버전-참고">버전 참고</a></h2>
+<p><code>main</code> 클론은 자신을 개발 빌드(<code>0.0.1.dev1+…</code>)로 보고하며, 릴리스 <code>v1.0.3</code>이 사용
+가능하다고 표시합니다. 개발 빌드는 정상적으로 테스트되었습니다. 대신 태그된 릴리스를
+사용하려면:</p>
+<pre><code class="language-bash">cd OpenJarvis &amp;&amp; git fetch --tags &amp;&amp; git checkout v1.0.3 &amp;&amp; VIRTUAL_ENV=.venv uv pip install -e ".[server]"
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="로컬-llm-스택-레퍼런스--litellm--qwen-122b--35b-mlx"><a class="header" href="#로컬-llm-스택-레퍼런스--litellm--qwen-122b--35b-mlx">로컬 LLM 스택 레퍼런스 — LiteLLM → Qwen 122B / 35B (MLX)</a></h1>
+<p><strong>목적:</strong> 이 문서는 다른 애플리케이션이 이 머신의 로컬 Qwen 모델과 통신하는 데 필요한 모든 것을 담고 있습니다. 어떤 소프트웨어든 <strong>OpenAI 호환(OpenAI-compatible)</strong> 엔드포인트를 지정할 수 있다면, 스택을 직접 들여다볼 필요 없이 이 문서만으로 설정이 가능합니다.</p>
+<ul>
+<li><strong>호스트:</strong> Apple M4 Max, 128 GB, macOS, arm64</li>
+<li><strong>서빙:</strong> <strong>LiteLLM</strong> 프록시 뒤에서 동작하는 Apple <strong>MLX</strong> (<code>mlx_lm.server</code>)</li>
+<li><strong>한 가지만 기억하세요:</strong> 앱을 <strong><code>http://localhost:4000/v1</code></strong> 로 지정하고, 아래 표에서 모델 이름을 하나 고르면 됩니다.</li>
+</ul>
+<hr>
+<h2 id="tldr--대부분의-앱에-필요한-값은-단-두-가지"><a class="header" href="#tldr--대부분의-앱에-필요한-값은-단-두-가지">TL;DR — 대부분의 앱에 필요한 값은 단 두 가지</a></h2>
+<pre><code>OpenAI-compatible Base URL : http://localhost:4000/v1
+API key                    : (none required — send any non-empty string if the field is mandatory)
+Model name                 : qwen-122b   (heavy)   |   qwen-35b   (fast)
+</code></pre>
+<blockquote>
+<p><strong>OpenAI 호환(OpenAI-compatible):</strong> 위 base URL은 표준 OpenAI REST API
+(<code>/v1/models</code>, <code>/v1/chat/completions</code>, SSE를 통한 스트리밍)를 구현합니다. 커스텀 OpenAI base URL
+또는 “OpenAI 호환 프로바이더(OpenAI-compatible provider)“를 지원하는 소프트웨어(OpenJarvis, Open WebUI,
+LibreChat, Continue, Cursor, LangChain, <code>openai</code> SDK 등)라면 해당 URL과 모델 이름을 설정하는 것만으로
+동작합니다. MLX 고유의 요소는 클라이언트에 전혀 노출되지 않습니다.</p>
+</blockquote>
+<hr>
+<h2 id="아키텍처"><a class="header" href="#아키텍처">아키텍처</a></h2>
+<pre><code>                 ┌────────────────────────────────────────────────────────────┐
+   Your app ───► │  LiteLLM proxy      :4000   (OpenAI-compatible front door)   │
+ (OpenAI API)    └───────┬───────────────────────────┬────────────────────────┘
+                         │                            │
+          plain chat     │                            │  role-shim path (system-msg safe)
+                         ▼                            ▼
+             ┌──────────────────────┐     ┌──────────────────────────────┐
+             │ mlx_lm.server :8001  │     │ role_shim :8011 ──► :8001     │  (122B)
+             │  qwen122b  (122B)    │     │ role_shim :8012 ──► :8000     │  (35B)
+             ├──────────────────────┤     └──────────────────────────────┘
+             │ mlx_lm.server :8000  │
+             │  qwen36-35b (35B)    │
+             └──────────────────────┘
+
+  (claude-code-proxy :8082 sits in front for Anthropic-API clients — see note below)
+</code></pre>
+<p>모든 구성 요소는 <code>127.0.0.1</code>(루프백 전용)에서 동작합니다. 의도된 진입점은 LiteLLM 프록시이며,
+<code>:8000</code>/<code>:8001</code> MLX 서버와 shim은 내부용입니다.</p>
+<hr>
+<h2 id="모델-카탈로그-4000-상의-litellm-별칭"><a class="header" href="#모델-카탈로그-4000-상의-litellm-별칭">모델 카탈로그 (<code>:4000</code> 상의 LiteLLM 별칭)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>모델 이름</th><th>크기</th><th>라우팅 대상</th><th>경유 경로</th><th>용도</th></tr>
+</thead>
+<tbody>
+<tr><td><code>qwen-122b</code></td><td>122B</td><td>MLX <code>:8001</code></td><td>직접</td><td>최고 품질 / 에이전트 / 추론</td></tr>
+<tr><td><code>qwen-35b</code></td><td>35B</td><td>MLX <code>:8000</code></td><td>직접</td><td>빠름 / 경량 / 고처리량</td></tr>
+<tr><td><code>qwen-local</code></td><td>35B</td><td>MLX <code>:8000</code></td><td>직접</td><td><code>qwen-35b</code>의 레거시 별칭</td></tr>
+<tr><td><code>qwen-122b-claude</code></td><td>122B</td><td>MLX <code>:8001</code></td><td>role-shim <code>:8011</code> 경유</td><td>클라이언트가 system/developer 메시지를 순서에 맞지 않게 보낼 때의 122B</td></tr>
+<tr><td><code>qwen-35b-claude</code></td><td>35B</td><td>MLX <code>:8000</code></td><td>role-shim <code>:8012</code> 경유</td><td>35B, 동일한 role-safe 경로</td></tr>
+<tr><td><code>qwen-122b-codex</code></td><td>122B</td><td>MLX <code>:8001</code></td><td>Responses→chat 브릿지 + role-shim</td><td>OpenAI <strong>Responses API</strong> / Codex 스타일 클라이언트</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>어떤 것을 고를까:</strong></p>
+<ul>
+<li>일반적인 OpenAI 호환 앱 → <strong><code>qwen-122b</code></strong> 또는 <strong><code>qwen-35b</code></strong>.</li>
+<li>MLX 오류 <em>“System message must be at the beginning”</em> 이 발생하면(일부 에이전트
+프레임워크가 대화 중간에 system 메시지를 삽입함) → 메시지 role을 정규화하는 <strong><code>*-claude</code></strong>
+변형으로 전환하세요.</li>
+<li>클라이언트가 <strong>Responses API</strong>(chat/completions가 아님)를 사용한다면 → <strong><code>qwen-122b-codex</code></strong>.</li>
+</ul>
+<hr>
+<h2 id="서빙-파라미터-실행-시-고정"><a class="header" href="#서빙-파라미터-실행-시-고정">서빙 파라미터 (실행 시 고정)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>백엔드</th><th>모델 디렉터리</th><th>포트</th><th>최대 토큰</th><th>Thinking</th></tr>
+</thead>
+<tbody>
+<tr><td>122B</td><td><code>/Users/ohama/llm-system/models/qwen122b</code></td><td><code>:8001</code></td><td>16384</td><td>비활성화 (<code>enable_thinking:false</code>)</td></tr>
+<tr><td>35B</td><td><code>/Users/ohama/llm-system/models/qwen36-35b</code></td><td><code>:8000</code></td><td>8192</td><td>비활성화 (<code>enable_thinking:false</code>)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>max-tokens</code>는 <strong>출력</strong> 길이에 대한 서버 측 상한입니다. 더 많이 요청하면 이 값으로 제한됩니다.</li>
+<li>Thinking/추론 트레이스는 서버 측에서 비활성화되어 있으므로, 응답은 최종 답변만 포함합니다.</li>
+</ul>
+<hr>
+<h2 id="스택이-정상-동작하는지-확인-앱을-설정하기-전에-실행"><a class="header" href="#스택이-정상-동작하는지-확인-앱을-설정하기-전에-실행">스택이 정상 동작하는지 확인 (앱을 설정하기 전에 실행)</a></h2>
+<pre><code class="language-bash"># 1. Is the proxy answering, and what models does it expose?
+curl -s http://localhost:4000/v1/models | python3 -m json.tool
+
+# 2. Does the 122B model actually generate?
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-122b","messages":[{"role":"user","content":"say OK"}],"max_tokens":5}'
+
+# 3. Same check for the 35B
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-35b","messages":[{"role":"user","content":"say OK"}],"max_tokens":5}'
+</code></pre>
+<p>(1)이 별칭들을 나열하고 (2)/(3)이 completion을 반환한다면, 어떤 OpenAI 호환 앱이든
+동작합니다. 그렇지 않다면 문제는 앱이 아니라 스택에 있습니다.</p>
+<hr>
+<h2 id="일반적인-openai-호환-소프트웨어-설정-방법"><a class="header" href="#일반적인-openai-호환-소프트웨어-설정-방법">일반적인 OpenAI 호환 소프트웨어 설정 방법</a></h2>
+<p>base URL과 모델을 설정하고, 키는 비워 두거나 아무 플레이스홀더 값이나 사용하세요.</p>
+<p><strong>일반 (env vars used by the <code>openai</code> SDK, LangChain, many tools):</strong></p>
+<pre><code class="language-bash">export OPENAI_BASE_URL="http://localhost:4000/v1"
+export OPENAI_API_KEY="local"        # any non-empty value; the proxy ignores it
+# then use model = "qwen-122b"
+</code></pre>
+<p><strong>Python <code>openai</code> SDK:</strong></p>
+<pre><code class="language-python">from openai import OpenAI
+client = OpenAI(base_url="http://localhost:4000/v1", api_key="local")
+resp = client.chat.completions.create(
+    model="qwen-122b",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+</code></pre>
+<p><strong>TOML/YAML 설정 앱 (예: OpenJarvis의 OpenAI 호환 엔진):</strong></p>
+<pre><code class="language-toml"># OpenAI-compatible engine → point host at the LiteLLM proxy, pick a model alias
+[engine]
+default = "mlx"                     # any "OpenAI-compatible" engine label works
+[engine.mlx]
+host = "http://localhost:4000"      # NOT the raw MLX port; the proxy is the front door
+# model = "qwen-122b"
+# API key only needed if you later enable a LiteLLM master key (see below)
+</code></pre>
+<p><strong>경험칙:</strong> 앱이 “OpenAI API base URL”, “커스텀 엔드포인트(custom endpoint)”,
+또는 “OpenAI 호환 프로바이더(OpenAI-compatible provider)“를 요구하는 곳이면 어디든
+<code>http://localhost:4000/v1</code> 을 입력하고 카탈로그에서 모델 이름을 선택하세요.</p>
+<hr>
+<h2 id="참고-사항-및-주의점"><a class="header" href="#참고-사항-및-주의점">참고 사항 및 주의점</a></h2>
+<ul>
+<li><strong>현재 인증 없음.</strong> 프록시는 현재 인증되지 않은 요청을 허용합니다.
+<code>agent-stack/litellm/config.yaml</code> 내부의 API 키는 LiteLLM이 MLX 백엔드에 접근할 때 사용되며,
+클라이언트는 이 키가 필요 없습니다. 나중에 LiteLLM <strong>master key</strong>를 활성화하면, 모든 앱이
+<code>Authorization: Bearer &lt;key&gt;</code> 를 전송해야 합니다.</li>
+<li><strong><code>/v1</code> 접미사.</strong> 앱이 전체 base URL을 요구할 때는 <code>/v1</code> 을 포함하세요. 일부 앱은
+이를 스스로 덧붙이므로, 오류에 <code>/v1/v1</code> 이 보이면 접미사를 제거하세요.</li>
+<li><strong>포트 <code>:8000</code> 은 사용 중</strong> 입니다. 35B MLX 서버가 점유하고 있습니다. 자체 서버를 가진 다른 앱을
+실행한다면 다른 포트에 바인딩하세요.</li>
+<li><strong>루프백 전용.</strong> LAN에 노출되는 것은 없습니다. 다른 기기에 서비스를 제공하려면 프록시 바인드
+주소를 변경하고 키를 추가해야 하는데, 이는 이 문서의 범위를 벗어납니다.</li>
+<li><strong>Anthropic-API 클라이언트</strong>(예: Claude Code)는 <code>:8082</code> 의 <code>claude-code-proxy</code> 를 사용할 수 있으며,
+이는 Anthropic → chat으로 변환하여 동일한 스택으로 전달합니다. 표준 앱은 위의
+OpenAI 호환 <code>:4000</code> 경로를 사용해야 합니다.</li>
+</ul>
+<hr>
+<h2 id="컴포넌트-맵-유지보수디버깅-전용--앱에는-필요-없음"><a class="header" href="#컴포넌트-맵-유지보수디버깅-전용--앱에는-필요-없음">컴포넌트 맵 (유지보수/디버깅 전용 — 앱에는 필요 없음)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>컴포넌트</th><th>명령</th><th>포트</th><th>설정 / 로그</th></tr>
+</thead>
+<tbody>
+<tr><td>LiteLLM proxy</td><td><code>agent-stack/venv/bin/litellm --config agent-stack/litellm/config.yaml --port 4000</code></td><td><code>:4000</code></td><td><code>agent-stack/litellm/config.yaml</code></td></tr>
+<tr><td>MLX 122B</td><td><code>mlx_lm.server --model .../qwen122b --port 8001 --max-tokens 16384</code></td><td><code>:8001</code></td><td><code>llm-system/services/logs/122b.*</code></td></tr>
+<tr><td>MLX 35B</td><td><code>mlx_lm.server --model .../qwen36-35b --port 8000 --max-tokens 8192</code></td><td><code>:8000</code></td><td><code>llm-system/services/logs/36-35b.*</code></td></tr>
+<tr><td>Role-shim (122B)</td><td><code>role_shim.py --listen 8011 --upstream http://localhost:8001</code></td><td><code>:8011</code></td><td><code>llm-system/services/logs/role-shim.*</code></td></tr>
+<tr><td>Role-shim (35B)</td><td><code>role_shim.py --listen 8012 --upstream http://localhost:8000</code></td><td><code>:8012</code></td><td><code>llm-system/services/logs/role-shim-35b.*</code></td></tr>
+<tr><td>Claude-code proxy</td><td><code>claude-code-proxy -s</code></td><td><code>:8082</code></td><td><code>agent-stack/claude-code-proxy/</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Role-shim의 목적:</strong> <code>mlx_lm.server</code> 는 모든 system 메시지가 첫 번째 메시지여야 함을 요구하며,
+OpenAI Responses의 <code>developer</code> role을 거부합니다. shim은 메시지를 재작성하여
+(첫 번째 <code>system</code>/<code>developer</code> → <code>system</code> 으로 맨 앞에 유지, 이후의 것들 → <code>user</code>), 스트리밍을 포함한
+나머지 모든 것을 바이트 단위 그대로 전달합니다. 이것이 <code>*-claude</code> / <code>-codex</code>
+별칭이 존재하는 이유입니다.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openjarvis-사용하기--상세-가이드"><a class="header" href="#openjarvis-사용하기--상세-가이드">OpenJarvis 사용하기 — 상세 가이드</a></h1>
+<p>이 머신에 설치된 OpenJarvis를 실제로 <em>사용하는</em> 방법 (로컬
+<code>qwen-122b</code> / <code>qwen-35b</code>에 연결됨 — 설치 방법은 <code>SETUP-OpenJarvis.md</code>를,
+모델 엔드포인트 세부 정보는 <code>LLM-STACK-REFERENCE.md</code>를 참고하세요).</p>
+<ul>
+<li><strong>CLI 바이너리:</strong> <code>/Users/ohama/projs/openjarvis-test/OpenJarvis/.venv/bin/jarvis</code></li>
+<li><strong>설정:</strong> <code>~/.openjarvis/config.toml</code> (모델 <code>qwen-122b</code>, 엔진 → LiteLLM <code>:4000</code>, API 서버 포트 <code>8090</code>)</li>
+<li>이 문서 전반에서 <code>jarvis</code>는 해당 venv 바이너리를 의미합니다. 그냥 <code>jarvis</code>만 입력해서
+실행하려면 <code>source .venv/bin/activate</code>를 실행하거나 PATH에 심볼릭 링크를 걸어두세요.</li>
+</ul>
+<blockquote>
+<p><strong>“아이폰에서 사용할 수 있나요?“에 대한 답변을 포함합니다 — 7번 섹션을 참고하세요.</strong></p>
+</blockquote>
+<hr>
+<h2 id="1-가장-빠르게-사용하는-방법"><a class="header" href="#1-가장-빠르게-사용하는-방법">1. 가장 빠르게 사용하는 방법</a></h2>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test/OpenJarvis
+
+# 단발성 질문 (기본 에이전트 + qwen-122b 사용)
+.venv/bin/jarvis ask "Summarize the theory of relativity in 3 bullets"
+
+# 대화형 멀티턴 대화
+.venv/bin/jarvis chat
+
+# 신규 사용자를 위한 가이드 설정 / 기능 둘러보기
+.venv/bin/jarvis quickstart
+
+# 진단 — 설정, 엔진 접근 가능 여부, 모델 등을 점검
+.venv/bin/jarvis doctor
+</code></pre>
+<p><code>ask</code>는 기본적으로 답변을 스트리밍합니다. 하나의 블록으로 받으려면 <code>--no-stream</code>을,
+원시 결과 객체를 받으려면 (스크립팅에 유용) <code>--json</code>을 추가하세요.</p>
+<hr>
+<h2 id="2-jarvis-ask--핵심-명령"><a class="header" href="#2-jarvis-ask--핵심-명령">2. <code>jarvis ask</code> — 핵심 명령</a></h2>
+<p>자주 쓰는 옵션 (<code>jarvis ask --help</code> 기준):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>플래그</th><th>용도</th></tr>
+</thead>
+<tbody>
+<tr><td><code>-m, --model</code></td><td>모델을 재정의, 예: 더 빠른 답변을 위한 <code>-m qwen-35b</code></td></tr>
+<tr><td><code>-a, --agent</code></td><td>에이전트 선택: <code>simple</code> (싱글턴, 도구 없음), <code>orchestrator</code> (멀티턴 + 도구), <code>react</code>, <code>openhands</code>. <code>--agent ''</code> = 모델과 직접 대화</td></tr>
+<tr><td><code>--tools</code></td><td>이번 호출에 사용할 도구를 제한, 예: <code>--tools calculator,think</code></td></tr>
+<tr><td><code>-t, --temperature</code> / <code>--max-tokens</code></td><td>샘플링 재정의</td></tr>
+<tr><td><code>--research</code></td><td>인덱싱된 개인 지식(BM25 + 임베딩)으로부터 답변</td></tr>
+<tr><td><code>-i, --image FILE</code> / <code>-S, --screen</code></td><td>비전 모델에 이미지 / 스크린샷 전송</td></tr>
+<tr><td><code>--profile</code></td><td>해당 호출의 지연 시간 / 토큰 / 에너지 텔레메트리 출력</td></tr>
+<tr><td><code>--no-context</code></td><td>메모리 컨텍스트 주입 건너뛰기</td></tr>
+</tbody>
+</table>
+</div>
+<p>예시:</p>
+<pre><code class="language-bash">.venv/bin/jarvis ask -m qwen-35b "quick: capital of Japan?"
+.venv/bin/jarvis ask --agent simple --tools calculator "what is 19% of 4,320?"
+.venv/bin/jarvis ask -S "what's on my screen right now?"      # 비전 모델 필요
+</code></pre>
+<hr>
+<h2 id="3-에이전트-도구-스킬"><a class="header" href="#3-에이전트-도구-스킬">3. 에이전트, 도구, 스킬</a></h2>
+<ul>
+<li>**에이전트(Agents)**는 요청이 처리되는 <em>방식</em>을 결정합니다. <code>simple</code>은 그저 답변만 하고,
+<code>orchestrator</code>는 여러 턴에 걸쳐 도구를 호출할 수 있으며, <code>openhands</code>/<code>react</code>는 코드/에이전트
+스타일입니다. 기본값은 <code>config.toml</code>(<code>[agent] default_agent</code>)에서 설정하거나 호출마다 재정의하세요.</li>
+<li><strong>영속 에이전트(Persistent agents):</strong> <code>jarvis agents</code> — 고유한 페르소나/설정을 가진 이름 있는
+에이전트를 생성하고, 살펴보고, 대화할 수 있습니다.</li>
+<li>**도구(Tools)**는 에이전트가 호출할 수 있는 기능입니다 (<code>code_interpreter</code>, <code>file_read</code>,
+<code>file_write</code>, <code>shell_exec</code>, <code>web_search</code>, <code>calculator</code>, <code>think</code>, 메모리/지식
+검색 등). <code>jarvis tool list</code>로 목록을 확인하세요. 호출마다 <code>--tools</code>로, 또는
+전역적으로 <code>[tools] enabled = [...]</code>에서 활성화합니다.</li>
+<li><strong>스킬(Skills):</strong> <code>jarvis skill</code> — 재사용 가능한 저장된 기능. <strong>MCP 서버:</strong> <code>jarvis add</code>로
+외부 도구 서버를 추가합니다 (그리고 <code>[tools.mcp] enabled = true</code>).</li>
+</ul>
+<blockquote>
+<p>참고: 일부 도구는 추가 설치가 필요합니다. <code>web_search</code>는 search extra를 필요로 합니다:
+<code>VIRTUAL_ENV=.venv uv pip install -e ".[server,tools-search]"</code>.</p>
+</blockquote>
+<hr>
+<h2 id="4-메모리-데이터-연결-및-딥-리서치"><a class="header" href="#4-메모리-데이터-연결-및-딥-리서치">4. 메모리, 데이터 연결 및 딥 리서치</a></h2>
+<p>OpenJarvis는 <em>당신의</em> 데이터를 대상으로 답변할 수 있습니다:</p>
+<pre><code class="language-bash"># 데이터 소스 연결 (Gmail, Obsidian, 로컬 폴더 등)
+.venv/bin/jarvis connect            # 사용 가능한 커넥터 확인
+
+# 문서를 지식 저장소에 인덱싱
+.venv/bin/jarvis memory index ~/Documents/papers/
+
+# 인덱싱된 데이터를 검색하는 질문
+.venv/bin/jarvis ask --research "what did the Q2 planning notes conclude?"
+
+# 또는 로컬 소스를 감지하고 리서치를 실행하는 단발성 자동 설정
+.venv/bin/jarvis deep-research-setup
+</code></pre>
+<p>메모리/지식은 <code>~/.openjarvis/*.db</code>에 저장됩니다 (설정에 따라 기본적으로 sqlite).</p>
+<hr>
+<h2 id="5-자동화--스케줄러-오퍼레이터-다이제스트-워크플로"><a class="header" href="#5-자동화--스케줄러-오퍼레이터-다이제스트-워크플로">5. 자동화 — 스케줄러, 오퍼레이터, 다이제스트, 워크플로</a></h2>
+<ul>
+<li><code>jarvis digest</code> — “모닝 다이제스트” (다이제스트 설정/에이전트 필요).</li>
+<li><code>jarvis scheduler</code> — 반복 작업 예약 (cron 스타일).</li>
+<li><code>jarvis operators</code> — 영속적이고 예약된 자율 에이전트 (예: 모니터).</li>
+<li><code>jarvis workflow</code> — 다단계 워크플로 목록/실행/검사.</li>
+</ul>
+<p>이러한 기능은 Jarvis를 온디맨드 어시스턴트에서 백그라운드 어시스턴트로 바꿔줍니다.</p>
+<hr>
+<h2 id="6-서버--데몬으로-실행하기-원격-및-앱-접근의-기반"><a class="header" href="#6-서버--데몬으로-실행하기-원격-및-앱-접근의-기반">6. 서버 / 데몬으로 실행하기 (원격 및 앱 접근의 기반)</a></h2>
+<p>OpenJarvis는 <strong>OpenAI 호환 HTTP API</strong>를 노출하고 백그라운드 데몬으로 실행할 수 있습니다.</p>
+<pre><code class="language-bash"># 포그라운드 서버 (Ctrl-C로 중지)
+.venv/bin/jarvis serve                       # 설정값에 바인딩: 127.0.0.1:8090
+
+# 백그라운드 데몬 + 라이프사이클
+.venv/bin/jarvis start                        # 데몬 시작
+.venv/bin/jarvis status                       # 실행 중인가?
+.venv/bin/jarvis restart / stop
+</code></pre>
+<p>서빙을 시작하면 표준 OpenAI API를 사용하므로, LiteLLM을 가리키던 것과 마찬가지로
+<strong>다른 소프트웨어가 이를 가리키도록</strong> 할 수 있습니다:</p>
+<pre><code class="language-bash">curl http://localhost:8090/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-122b","messages":[{"role":"user","content":"hi"}]}'
+</code></pre>
+<blockquote>
+<p><code>server</code> extra가 필요합니다 (여기에는 이미 설치됨). 기본적으로 루프백에만
+바인딩됩니다 — 다른 기기에서 접근하려면 다음 섹션을 참고하세요.</p>
+</blockquote>
+<hr>
+<h2 id="7-아이폰에서-사용할-수-있나요"><a class="header" href="#7-아이폰에서-사용할-수-있나요">7. 아이폰에서 사용할 수 있나요?</a></h2>
+<p><strong>짧은 답변: 예 — 다만 전용 App Store 앱을 통해서는 아닙니다.</strong> OpenJarvis는
+데스크톱 GUI(<code>.dmg</code>/<code>.exe</code>/<code>.deb</code>/…)와 CLI를 제공하며, <strong>네이티브 iOS 앱은 없습니다</strong>.
+아이폰에서 사용하려면 이 Mac에서 실행 중인 인스턴스에 세 가지 방법 중 하나로 연결합니다.
+어떤 방법이든 Mac이 <strong>켜져 있고 해당 데몬이 실행 중</strong>이어야 합니다.</p>
+<h3 id="옵션-a--메시징-채널-가장-쉬움-네이티브에-가까운-느낌--권장"><a class="header" href="#옵션-a--메시징-채널-가장-쉬움-네이티브에-가까운-느낌--권장">옵션 A — 메시징 채널 (가장 쉬움, 네이티브에 가까운 느낌) ✅ 권장</a></h3>
+<p>OpenJarvis에는 **멀티채널 게이트웨이(multi-channel gateway)**가 있습니다: 아이폰에 이미 설치된
+메시징 앱 안에서 Jarvis와 대화하면, 로컬 <code>qwen-122b</code>를 사용해 응답합니다.</p>
+<p>지원 채널에는 <strong>Telegram, WhatsApp, Slack, Discord, iMessage/SMS</strong>가 포함됩니다
+(iMessage/SMS는 서드파티 <strong>SendBlue</strong> 서비스를 통해).</p>
+<pre><code class="language-bash">.venv/bin/jarvis channel list          # 채널 유형 확인
+.venv/bin/jarvis gateway start         # 멀티채널 게이트웨이 데몬 실행
+.venv/bin/jarvis gateway status
+.venv/bin/jarvis channels imessage-start &lt;CHAT_IDENTIFIER&gt;   # iMessage 경로
+</code></pre>
+<ul>
+<li><strong>Telegram</strong>이 대개 가장 간단합니다: 봇 토큰을 만들고, 채널 설정에 넣은 뒤,
+<code>gateway start</code>를 실행하고, 아이폰의 Telegram 앱에서 봇에게 메시지를 보내면 됩니다.</li>
+<li><strong>iMessage</strong>는 기본 메시지 앱에서 Jarvis에게 문자를 보낼 수 있지만, SendBlue
+계정(유료 서드파티)이 필요합니다 — 설정이 더 번거롭습니다.</li>
+<li><strong>아이폰에 이 방법이 가장 좋은 이유:</strong> 네트워크에 아무것도 노출할 필요가 없고,
+인터넷만 있으면 어디서든 동작하며, UI가 이미 신뢰하는 채팅 앱입니다.</li>
+</ul>
+<h3 id="옵션-b--네트워크를-통해-http-api-접근-"><a class="header" href="#옵션-b--네트워크를-통해-http-api-접근-">옵션 B — 네트워크를 통해 HTTP API 접근 🌐</a></h3>
+<p>서버를 LAN에 바인딩해서 실행하고 아이폰에서 접속합니다. 이 방법에는 키가 필요합니다
+(시작 시 키 없이 루프백이 아닌 바인딩을 <strong>거부</strong>합니다):</p>
+<pre><code class="language-bash">.venv/bin/jarvis auth generate-key                  # API 키 생성
+.venv/bin/jarvis serve --host 0.0.0.0 --port 8090   # LAN에 바인딩
+</code></pre>
+<p>그런 다음 아이폰에서 (같은 Wi-Fi):</p>
+<ul>
+<li>아무 <strong>OpenAI 호환 iOS 채팅 앱</strong>(또는 “Get Contents of URL” POST를 사용하는 Apple
+<strong>Shortcuts</strong>)을 <code>http://&lt;mac-LAN-IP&gt;:8090/v1</code>, 모델 <code>qwen-122b</code>로 가리키고,
+API 키를 <code>Authorization: Bearer &lt;key&gt;</code>로 전송합니다.</li>
+<li>또는 GUI/웹 엔드포인트가 서빙 중이라면 Safari에서 그냥 <code>http://&lt;mac-LAN-IP&gt;:8090/</code>를 엽니다.</li>
+</ul>
+<p>Mac의 LAN IP는 <code>ipconfig getifaddr en0</code>로 확인합니다. 이 방법은 아이폰이 Mac과 <strong>같은
+네트워크</strong>에 있을 때만 동작합니다. <strong>외부에서</strong> 접근하려면 <strong>Tailscale</strong> 같은 프라이빗
+메시 VPN을 사용하세요 (두 기기에 모두 설치하고, LAN IP 대신 Mac의 Tailscale IP를 사용) —
+공용 인터넷에 포트를 노출하지 않습니다.</p>
+<h3 id="옵션-c--공용-터널-어디서든-접근-"><a class="header" href="#옵션-c--공용-터널-어디서든-접근-">옵션 C — 공용 터널 (어디서든 접근) 🚇</a></h3>
+<p>OpenJarvis에는 내장 Cloudflare 터널이 있습니다:</p>
+<pre><code class="language-bash">.venv/bin/jarvis serve --host 127.0.0.1 --port 8090   # 루프백 유지
+.venv/bin/jarvis tunnel --port 8090                   # Cloudflare를 통해 노출
+.venv/bin/jarvis tunnel status
+</code></pre>
+<p>이렇게 하면 아이폰에서 어디서든 열 수 있는 공용 HTTPS URL이 생깁니다. 이 방법을 쓸 때는
+<strong>항상 API 키를 활성화</strong>하세요 — 터널은 URL을 아는 누구나 접근할 수 있습니다.</p>
+<h3 id="어떤-것을-선택해야-할까"><a class="header" href="#어떤-것을-선택해야-할까">어떤 것을 선택해야 할까?</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>원하는 것</th><th>사용</th></tr>
+</thead>
+<tbody>
+<tr><td>가장 간단하고, 채팅 앱 느낌이며, 어디서든 동작</td><td><strong>A — Telegram 채널</strong></td></tr>
+<tr><td>메시지 앱에서 Jarvis에게 문자 보내기</td><td>A — iMessage (SendBlue 필요)</td></tr>
+<tr><td>OpenAI 호환 iOS 앱 / Shortcuts를 집에서 사용</td><td><strong>B — LAN 서버 + 키</strong></td></tr>
+<tr><td>위와 같으나 외부에서도 프라이빗하게</td><td>B + <strong>Tailscale</strong></td></tr>
+<tr><td>어디서든 접근 가능한 공용 URL</td><td><strong>C — Cloudflare 터널</strong> (+ 키)</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="아이폰-접근-시-보안-유의사항"><a class="header" href="#아이폰-접근-시-보안-유의사항">아이폰 접근 시 보안 유의사항</a></h3>
+<ul>
+<li>API 키 없이 <code>0.0.0.0</code>에 바인딩하거나 터널을 열지 <strong>마세요</strong>.</li>
+<li>라우터의 포트 포워딩보다 Tailscale을 선호하세요.</li>
+<li>프롬프트가 Mac을 벗어나는 것은 선택한 채널/터널 제공자로 향할 때뿐이며, 모델
+자체는 여전히 로컬의 <code>qwen-122b</code>에서 실행됩니다.</li>
+</ul>
+<hr>
+<h2 id="8-유지-관리"><a class="header" href="#8-유지-관리">8. 유지 관리</a></h2>
+<pre><code class="language-bash">.venv/bin/jarvis config show      # 어떤 설정이 로드되었는지
+.venv/bin/jarvis doctor           # 상태 점검
+.venv/bin/jarvis scan             # 환경에 대한 개인정보/보안 감사
+.venv/bin/jarvis telemetry ...    # 과거 호출의 지연 시간/토큰/에너지 통계
+.venv/bin/jarvis self-update      # 업그레이드 (또는 SETUP 문서의 git/uv 방법 사용)
+</code></pre>
+<p><strong>이 폴더의 관련 문서:</strong></p>
+<ul>
+<li><code>SETUP-OpenJarvis.md</code> — 이 설치가 어떻게 구성되었는지 (그리고 다시 하는 방법)</li>
+<li><code>LLM-STACK-REFERENCE.md</code> — OpenAI 호환 앱을 위한 LiteLLM → Qwen 엔드포인트 레퍼런스</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openjarvis-telegram-채널--설정-및-사용법"><a class="header" href="#openjarvis-telegram-채널--설정-및-사용법">OpenJarvis Telegram 채널 — 설정 및 사용법</a></h1>
+<p><strong>모든 기기(iPhone 포함)의 Telegram 앱</strong>에서 로컬 <code>qwen-122b</code>와 대화하세요.
+비공개 봇에 보낸 메시지는 이 Mac에서 실행 중인 OpenJarvis가 응답합니다.</p>
+<ul>
+<li><strong>동작 방식:</strong> OpenJarvis는 Telegram의 <strong>롱 폴링(long polling)</strong> 을 사용합니다. 즉,
+Telegram 서버에서 메시지를 <em>가져옵니다</em>. 따라서 <strong>공개 URL, 열린 포트, 터널이 전혀 필요 없습니다.</strong>
+Mac은 인터넷 연결과 게이트웨이 데몬 실행만 있으면 됩니다.</li>
+<li><strong>모델 실행 위치:</strong> 로컬(LiteLLM을 통한 <code>qwen-122b</code>). Telegram 서버를 거치는 것은
+메시지 텍스트뿐이며, 추론(inference)은 여러분의 기기에서 이루어집니다.</li>
+<li><strong>설정 파일:</strong> <code>~/.openjarvis/config.toml</code> (<code>[channel]</code> / <code>[channel.telegram]</code>
+섹션은 이미 추가되어 있습니다 — 2단계 참고).</li>
+</ul>
+<hr>
+<h2 id="이미-완료된-작업-vs-직접-해야-할-작업"><a class="header" href="#이미-완료된-작업-vs-직접-해야-할-작업">이미 완료된 작업 vs. 직접 해야 할 작업</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>완료된 작업</th><th>직접 해야 할 작업 (한 번만)</th></tr>
+</thead>
+<tbody>
+<tr><td><code>[channel] enabled = true</code>, <code>default_channel = "telegram"</code> 설정에 추가됨</td><td><strong>@BotFather</strong> 로 봇을 만들고 <strong>토큰</strong>을 발급받기</td></tr>
+<tr><td><code>[channel.telegram]</code> 섹션이 플레이스홀더 토큰과 함께 구성됨</td><td>토큰을 설정 파일에 붙여넣기 (2단계)</td></tr>
+<tr><td><code>python-telegram-bot</code> 설치됨; 설정 파싱 확인 완료</td><td>(권장) 봇을 본인 채팅 ID로 제한하기 (3단계)</td></tr>
+</tbody>
+</table>
+</div>
+<p>토큰이 아직 플레이스홀더 <code>REPLACE_WITH_BOTFATHER_TOKEN</code> 이기 때문에
+<code>jarvis channel status --channel-type telegram</code> 은 현재 <strong>disconnected</strong> 를 보고합니다.</p>
+<hr>
+<h2 id="1단계--봇-만들기-telegram-앱에서"><a class="header" href="#1단계--봇-만들기-telegram-앱에서">1단계 — 봇 만들기 (Telegram 앱에서)</a></h2>
+<ol>
+<li>Telegram을 열고 <strong>@BotFather</strong> (파란 체크가 있는 공식 계정)를 검색해 대화를 시작합니다.</li>
+<li><code>/newbot</code> 을 보냅니다.</li>
+<li><strong>이름</strong>(표시 이름, 무엇이든 가능)과 <strong>사용자 이름</strong>(반드시 <code>bot</code> 으로 끝나야 함,
+예: <code>ohama_jarvis_bot</code>)을 지정합니다.</li>
+<li>BotFather가 다음과 같은 <strong>토큰</strong>으로 응답합니다:
+<code>123456789:AAExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>
+비밀로 유지하세요 — 봇을 제어할 수 있는 전체 자격 증명입니다.</li>
+</ol>
+<p>선택적인 BotFather 부가 기능: <code>/setdescription</code>, <code>/setuserpic</code>, 그리고 나중에 그룹 채팅에서
+사용하려면 <code>/setprivacy</code> → <strong>Disable</strong>.</p>
+<hr>
+<h2 id="2단계--토큰-추가하기"><a class="header" href="#2단계--토큰-추가하기">2단계 — 토큰 추가하기</a></h2>
+<p><code>~/.openjarvis/config.toml</code> 을 편집해 <code>[channel.telegram]</code> 섹션에서 플레이스홀더를
+교체합니다:</p>
+<pre><code class="language-toml">[channel]
+enabled = true
+default_channel = "telegram"
+
+[channel.telegram]
+bot_token = "123456789:AAExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"   # &lt;- 여러분의 BotFather 토큰
+# allowed_chat_ids = "..."   # 3단계 참고
+</code></pre>
+<p><strong>대안 (비밀 정보를 파일에서 제외):</strong> <code>bot_token = ""</code> 로 두고 게이트웨이를 실행하는
+셸에서 환경 변수를 내보냅니다:</p>
+<pre><code class="language-bash">export TELEGRAM_BOT_TOKEN="123456789:AAE..."
+</code></pre>
+<p>OpenJarvis는 <code>bot_token</code> 이 비어 있을 때 <code>TELEGRAM_BOT_TOKEN</code> 을 읽습니다.</p>
+<hr>
+<h2 id="3단계--본인-전용으로-제한하기-권장"><a class="header" href="#3단계--본인-전용으로-제한하기-권장">3단계 — 본인 전용으로 제한하기 (권장)</a></h2>
+<p>허용 목록(allow-list)이 없으면 <strong>봇의 사용자 이름을 알아낸 누구든 사용할 수 있습니다</strong>
+(그리고 여러분의 로컬 GPU를 소모하거나 활성화한 도구를 읽을 수 있습니다). 본인의 채팅 ID로
+제한하세요:</p>
+<ol>
+<li>토큰만 설정한 상태로 게이트웨이를 임시로 시작합니다 (4단계).</li>
+<li>Telegram에서 봇으로 아무 메시지나 보냅니다.</li>
+<li><code>jarvis channel status --channel-type telegram</code> 을 실행하거나 (또는 <code>gateway logs</code> 확인)
+수신된 채팅 ID를 확인합니다. 또는 Telegram에서 <strong>@userinfobot</strong> 에 메시지를 보내면
+숫자 ID로 응답합니다.</li>
+<li>이를 설정에 넣고 게이트웨이를 재시작합니다:
+<pre><code class="language-toml">[channel.telegram]
+allowed_chat_ids = "123456789"          # 여러 개는 쉼표로 구분: "111,222"
+</code></pre>
+</li>
+</ol>
+<p>이후 다른 채팅 ID에서 오는 메시지는 무시됩니다.</p>
+<hr>
+<h2 id="4단계--게이트웨이-시작하기"><a class="header" href="#4단계--게이트웨이-시작하기">4단계 — 게이트웨이 시작하기</a></h2>
+<p><strong>게이트웨이</strong>는 활성화된 채널을 실행하는 데몬입니다.</p>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test/OpenJarvis
+
+.venv/bin/jarvis gateway start      # 멀티 채널 게이트웨이 시작 (백그라운드 데몬)
+.venv/bin/jarvis gateway status     # 실행 여부 확인
+.venv/bin/jarvis gateway logs       # 로그 확인 (3단계의 채팅 ID 확인에 유용)
+.venv/bin/jarvis gateway stop       # 중지
+</code></pre>
+<p>채널 자체가 연결되었는지 확인합니다:</p>
+<pre><code class="language-bash">.venv/bin/jarvis channel status --channel-type telegram   # 원하는 결과: Status: connected
+</code></pre>
+<blockquote>
+<p>봇이 응답하려면 Mac이 깨어 있어야 합니다. 상시 실행하려면 App Nap / 절전을
+비활성화하거나, 전원을 연결한 채 “절전 방지“를 켜 두세요.</p>
+</blockquote>
+<hr>
+<h2 id="사용하기"><a class="header" href="#사용하기">사용하기</a></h2>
+<ul>
+<li>Telegram에서 봇을 열고(BotFather 링크 또는 사용자 이름 검색) <strong>메시지를 보내기만</strong>
+하면 됩니다 — 예: <em>“핵융합 에너지 관련 뉴스를 3개 항목으로 요약해 줘”</em>.</li>
+<li>봇은 설정의 <strong>기본 에이전트 + 모델</strong>(<code>orchestrator</code> + <code>qwen-122b</code>)로 응답합니다.
+긴 응답은 Telegram의 4096자 제한에서 자동으로 분할됩니다.</li>
+<li><strong>Telegram에 로그인된 모든 기기</strong>(iPhone, iPad, 데스크톱)에서 동작합니다 — 봇이
+특정 기기가 아니라 여러분의 Telegram 계정에 존재하기 때문입니다.</li>
+</ul>
+<h3 id="cli에서-아웃바운드-메시지-보내기-알림"><a class="header" href="#cli에서-아웃바운드-메시지-보내기-알림">CLI에서 아웃바운드 메시지 보내기 (알림)</a></h3>
+<p>스크립트에서 Telegram <em>으로</em> 메시지를 푸시할 수도 있습니다:</p>
+<pre><code class="language-bash">.venv/bin/jarvis channel send telegram "Build finished ✅"
+</code></pre>
+<hr>
+<h2 id="관리-및-문제-해결"><a class="header" href="#관리-및-문제-해결">관리 및 문제 해결</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>증상</th><th>유력한 원인</th><th>해결 방법</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Status: disconnected</code></td><td>토큰이 여전히 플레이스홀더이거나 잘못됨</td><td>실제 BotFather 토큰을 설정에 입력 (2단계)</td></tr>
+<tr><td>봇이 전혀 응답하지 않음</td><td>게이트웨이 미실행</td><td><code>jarvis gateway start</code>; <code>gateway logs</code> 확인</td></tr>
+<tr><td>봇이 유독 나만 무시함</td><td>본인 채팅 ID가 <code>allowed_chat_ids</code> 에 없음</td><td>본인 ID를 추가하거나, 테스트를 위해 허용 목록을 비우기</td></tr>
+<tr><td>노트북을 닫으면 응답이 멈춤</td><td>Mac이 절전 상태</td><td>깨어 있게 유지 / 전원 연결</td></tr>
+<tr><td>다른 사람이 사용할 수 있음</td><td>허용 목록 없음</td><td><code>allowed_chat_ids</code> 설정 (3단계)</td></tr>
+<tr><td>토큰 유출</td><td>—</td><td>BotFather에서 <code>/revoke</code> 로 새 토큰을 발급한 뒤 설정 업데이트</td></tr>
+</tbody>
+</table>
+</div>
+<p>유용한 명령:</p>
+<pre><code class="language-bash">.venv/bin/jarvis config show                         # 채널 설정이 로드되었는지 확인
+.venv/bin/jarvis channel status --channel-type telegram
+.venv/bin/jarvis gateway logs
+</code></pre>
+<hr>
+<h2 id="보안-참고-사항"><a class="header" href="#보안-참고-사항">보안 참고 사항</a></h2>
+<ul>
+<li>봇을 정말로 공개하려는 것이 아니라면 <strong><code>allowed_chat_ids</code> 를 설정하세요</strong> — 봇은 로컬
+컴퓨팅 자원을 소모하며 기본 에이전트가 가진 모든 도구(<code>shell_exec</code>, <code>file_write</code>, …)를 호출할 수 있습니다.</li>
+<li>허용 목록을 잠그지 않을 경우 Telegram 대상 구성에 <strong>덜 강력한 기본 에이전트/도구</strong>를
+부여하는 것을 고려하세요.</li>
+<li><strong>토큰은 비밀입니다.</strong> 파일에 커밋하기보다 <code>TELEGRAM_BOT_TOKEN</code> 환경 변수를 선호하세요.
+유출된 경우 BotFather에서 <code>/revoke</code> 하세요.</li>
+<li>메시지 텍스트는 <strong>Telegram 서버</strong>를 거칩니다(봇의 경우 종단 간 암호화되지 않음).
+모델과 여러분의 데이터는 로컬에 유지되지만, 일반적인 Telegram 채팅에 넣지 않을 비밀은
+보내지 마세요.</li>
+</ul>
+<hr>
+<h2 id="관련-문서"><a class="header" href="#관련-문서">관련 문서</a></h2>
+<ul>
+<li><code>USING-OpenJarvis.md</code> — 전체 CLI/사용 가이드 (Telegram은 여러 채널 중 하나)</li>
+<li><code>LLM-STACK-REFERENCE.md</code> — 봇이 응답에 사용하는 로컬 모델 엔드포인트</li>
+<li><code>SETUP-OpenJarvis.md</code> — 이 OpenJarvis 설치가 구축된 방법</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openjarvis-vs-openhands-vs-gsd-vs-langgraph--상세-비교"><a class="header" href="#openjarvis-vs-openhands-vs-gsd-vs-langgraph--상세-비교">OpenJarvis vs. OpenHands vs. GSD vs. LangGraph — 상세 비교</a></h1>
+<p>네 가지 인기 에이전트 도구의 기능 비교이며, <strong>이 머신의 구성</strong>(Apple M4 Max에서 LiteLLM을 통해 구동되는 로컬 <code>qwen-122b</code>/<code>qwen-35b</code>)을 염두에 두고 작성했습니다.</p>
+<blockquote>
+<p><strong>먼저 읽어주세요 — 이들은 같은 범주가 아닙니다.</strong> 이들의 “기능“을 정면으로 맞대어
+비교하는 것은 다소 사과와 오렌지를 비교하는 격입니다. 이들은 서로 다른 계층에 위치합니다:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>도구</th><th>근본적으로 <em>무엇인가</em></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>OpenJarvis</strong></td><td><strong>개인 비서 런타임/플랫폼</strong> — <em>당신</em>을 위해 로컬 우선(local-first) AI 에이전트를 구동(채팅, 다이제스트, 모니터, 리서치)하며, 다양한 채널에서 접근 가능</td></tr>
+<tr><td><strong>OpenHands</strong></td><td><strong>자율 소프트웨어 엔지니어링 에이전트</strong> — 코드를 작성하고, 터미널을 실행하며, PR을 엽니다</td></tr>
+<tr><td><strong>GSD</strong> (Get Shit Done)</td><td>코딩 에이전트(Claude Code 등) <em>위에</em> 얹는 <strong>명세 기반(spec-driven) 워크플로/방법론</strong> — 사람+AI의 <em>프로세스</em>를 오케스트레이션하며, 런타임이 아닙니다</td></tr>
+<tr><td><strong>LangGraph</strong></td><td><em>개발자</em>가 Python/JS로 상태를 가진 에이전트 그래프를 구축하기 위한 <strong>저수준 라이브러리/SDK</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p>따라서 진짜 질문은 대개 “어느 것이 가장 좋은가“가 아니라 “나에게 어느 계층이 필요한가“입니다.</p>
+</blockquote>
+<hr>
+<h2 id="1-한눈에-보는-매트릭스"><a class="header" href="#1-한눈에-보는-매트릭스">1. 한눈에 보는 매트릭스</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>항목</th><th><strong>OpenJarvis</strong></th><th><strong>OpenHands</strong></th><th><strong>GSD</strong></th><th><strong>LangGraph</strong></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>범주</strong></td><td>개인 AI 에이전트 플랫폼</td><td>자율 SWE 에이전트</td><td>개발 워크플로 / 메타 프롬프팅 시스템</td><td>에이전트 오케스트레이션 라이브러리</td></tr>
+<tr><td><strong>주요 사용자</strong></td><td>최종 사용자 / 취미 개발자</td><td>개발자 / 팀</td><td>Claude Code 등을 사용하는 개발자</td><td>에이전트를 구축하는 개발자</td></tr>
+<tr><td><strong>상호작용 방식</strong></td><td>CLI, 채팅, 메시징 채널, GUI, HTTP API</td><td>브라우저 “Agent Canvas”, SDK, CLI</td><td>Claude Code 내부의 슬래시 커맨드</td><td>직접 작성한 코드(Python/JS)</td></tr>
+<tr><td><strong>핵심 역할</strong></td><td>로컬 개인 비서가 되는 것</td><td>코딩 작업을 처음부터 끝까지 완수</td><td>장기 프로젝트의 일관성 유지(context rot 극복)</td><td>프로그래밍할 그래프/상태 기계 제공</td></tr>
+<tr><td><strong>로컬 우선 / 프라이버시</strong></td><td>✅ 핵심 설계 목표(당신의 HW에서 구동)</td><td>⚠️ 셀프 호스팅 가능하나 샌드박스 + 클라우드 지향</td><td>➖ 호스트 에이전트를 상속(예: Claude Code → 클라우드)</td><td>➖ 프로바이더 비종속적; 직접 선택</td></tr>
+<tr><td><strong>로컬 모델 구동(Ollama/MLX/vLLM)</strong></td><td>✅ 내장 엔진 + OpenAI 호환</td><td>✅ LiteLLM을 통해 Qwen/Llama 지원</td><td>➖ 호스트 CLI가 사용하는 것 무엇이든</td><td>✅ LangChain 프로바이더 바인딩을 통해</td></tr>
+<tr><td><strong>멀티 에이전트 오케스트레이션</strong></td><td>✅ 에이전트 + 게이트웨이 + 오퍼레이터</td><td>✅ 멀티 에이전트, 위임</td><td>✅ 병렬 “wave” 서브에이전트</td><td>✅✅ 핵심 강점(그래프)</td></tr>
+<tr><td><strong>장기 기억</strong></td><td>✅ 지식 저장소(BM25+밀집 검색), 커넥터</td><td>➖ 세션/워크스페이스 상태</td><td>✅ 디스크 상의 파일(PROJECT/PLAN/phase 문서)</td><td>✅ 체크포인터 + 메모리 저장소</td></tr>
+<tr><td><strong>Human-in-the-loop(사람 개입)</strong></td><td>채팅 네이티브</td><td>UI에서 검토/승인</td><td>✅ 명시적 discuss/verify 게이트</td><td>✅ 일급 지원(상태 일시정지/검사/편집)</td></tr>
+<tr><td><strong>도구 사용 / 코드 실행</strong></td><td>도구 + MCP + 샌드박스</td><td>✅ 완전 지원: 셸, 브라우저, PR</td><td>호스트 에이전트의 도구를 통해</td><td>도구를 노드에 직접 연결</td></tr>
+<tr><td><strong>배포</strong></td><td>노트북/Mac mini/서버, 터널, 채널</td><td>노트북 → 클라우드 서버(Docker)</td><td>해당 없음(에디터/CLI 내부에서 구동)</td><td>라이브러리 → LangGraph Platform/Cloud</td></tr>
+<tr><td><strong>“고집스러움“의 정도</strong></td><td>중간(배터리 포함형)</td><td>중상(SWE 루프)</td><td>높음(프로세스를 규정)</td><td>낮음(모든 것을 직접 결정)</td></tr>
+<tr><td><strong>사용에 필요한 코딩 수준</strong></td><td>적음(CLI/설정)</td><td>적음(UI)</td><td>없음(프롬프트)</td><td>많음(라이브러리이므로)</td></tr>
+<tr><td><strong>라이선스 / 모델</strong></td><td>오픈 소스</td><td>오픈 소스(+ 호스팅 클라우드)</td><td>오픈 소스</td><td>오픈 소스(+ 유료 플랫폼)</td></tr>
+<tr><td><strong>대략적 규모(2026)</strong></td><td>신흥 단계</td><td>~70k★, SWE-bench ~53%</td><td>~58k★, 2025년 12월 출시</td><td>v1.0, ~30k★, Uber/LinkedIn/Klarna 프로덕션</td></tr>
+</tbody>
+</table>
+</div>
+<p>범례: ✅ 강력 / 내장 · ⚠️ 부분적 또는 단서 조건 있음 · ➖ 주력 대상 아님(간접적으로 가능)</p>
+<hr>
+<h2 id="2-도구별-상세"><a class="header" href="#2-도구별-상세">2. 도구별 상세</a></h2>
+<h3 id="openjarvis--당신의-로컬-개인-비서"><a class="header" href="#openjarvis--당신의-로컬-개인-비서">OpenJarvis — <em>당신</em>의 로컬 개인 비서</a></h3>
+<ul>
+<li><strong>용도:</strong> 당신의 하드웨어 위에서 살아가며 <em>개인적인</em> 작업을 수행하는 프라이빗 AI —
+채팅, 아침 다이제스트, 자신의 문서를 대상으로 한 심층 리서치, 예약된 모니터,
+코드 어시스턴트를 제공하며, Telegram/iMessage/Slack/WhatsApp, 데스크톱 GUI,
+또는 OpenAI 호환 HTTP API에서 접근할 수 있습니다.</li>
+<li><strong>두드러진 기능:</strong> 13개 이상의 추론 엔진(Ollama, MLX, vLLM,
+llama.cpp, LiteLLM, 클라우드…)을 지원하는 기본 로컬 구동, 멀티 채널 게이트웨이, 개인 지식 저장소, MCP
+도구 지원, 자동화를 위한 오퍼레이터/스케줄러, 그리고 트레이스 기반 학습.</li>
+<li><strong>약점:</strong> 전문 코딩 에이전트가 아니며(그 영역은 OpenHands가 더 강력함), 더 새롭고
+생태계가 작으며, 정해진 방법을 따르기보다 자신만의 워크플로를 직접 조립해야 합니다.</li>
+<li><strong>이 머신에 완벽히 부합:</strong> 당신이 이미 갖춘 로컬 모델 스택(LiteLLM을 통한 <code>qwen-122b</code>)을
+정확히 구동하도록 만들어졌습니다. <code>USING-OpenJarvis.md</code>를 참고하세요.</li>
+</ul>
+<h3 id="openhands-구-opendevin--자율-소프트웨어-엔지니어"><a class="header" href="#openhands-구-opendevin--자율-소프트웨어-엔지니어">OpenHands (구 OpenDevin) — 자율 소프트웨어 엔지니어</a></h3>
+<ul>
+<li><strong>용도:</strong> GitHub 이슈나 작업을 건네면 계획을 세우고, 코드를 작성하며, 터미널을
+실행하고, 문서를 탐색하며, 테스트를 고치고, PR을 엽니다 — 샌드박스화된 Docker 환경에서의
+완전한 에이전트형 개발 루프입니다.</li>
+<li><strong>두드러진 기능:</strong> 강력한 모델과 함께 SWE-bench Verified에서 ~53%+; V1 모듈형
+<strong>Software Agent SDK</strong>(이벤트 소싱 상태, 선택적 샌드박싱, REST/WebSocket 서버);
+브라우저 “Agent Canvas” UI; VS Code/VNC/브라우저 워크스페이스; Slack/GitHub에서 트리거 가능.</li>
+<li><strong>모델 지원:</strong> LiteLLM을 통한 Claude, GPT, Gemini 및 오픈 모델(Llama, <strong>Qwen</strong>) —
+따라서 로컬 <code>qwen-122b</code>에 대해 <em>구동할 수 있으나</em>, 최고 점수는 프런티어 모델에서 나옵니다.</li>
+<li><strong>약점:</strong> 구동이 더 무거우며(Docker 샌드박스, 이상적으로는 서버 필요), 일반적인 개인 비서 작업이 아니라
+소프트웨어 엔지니어링에 집중하고, 클라우드 서버 배포에서 진가를 발휘합니다.</li>
+</ul>
+<h3 id="gsd-get-shit-done--명세-기반-프로세스"><a class="header" href="#gsd-get-shit-done--명세-기반-프로세스">GSD (Get Shit Done) — 명세 기반 <em>프로세스</em></a></h3>
+<ul>
+<li><strong>용도:</strong> <strong>크고 여러 세션에 걸친 프로젝트의 일관성 유지</strong>. 런타임이 아니라
+Claude Code(및 OpenCode/Gemini CLI/Codex)를 위한 슬래시 커맨드 워크플로 모음으로,
+<strong>discuss → plan → execute → verify → ship</strong> 사이클을 강제합니다. <em>(이 머신에 설치되어 있습니다 —
+<code>/gsd:*</code> 커맨드와 <code>.planning/</code>을 참고하세요.)</em></li>
+<li><strong>해결하는 문제:</strong> <em>context rot</em> — 하나의 긴 세션이 컨텍스트 윈도우를 채워가며 품질이
+저하되는 현상. GSD는 작업을 **phase(단계)**로 분할하고, 깨끗한 200k 토큰 컨텍스트를 가진
+<strong>새로운 서브에이전트</strong>를 생성하며, 독립적인 작업을 병렬 “<strong>wave(웨이브)</strong>“로 실행하고, <code>PLAN.md</code>
+파일을 서브에이전트가 직접 읽는 <em>바로 그</em> 실행 가능한 지시서로 만듭니다.</li>
+<li><strong>두드러진 기능:</strong> 인터뷰 기반 명세 생성, 병렬 리서치 에이전트,
+목표 역방향(goal-backward) 검증, 영속적 <code>.planning/</code> 문서(PROJECT/REQUIREMENTS/MILESTONES,
+phase별 PLAN/RESEARCH/VERIFICATION). 이 머신의 설정: <code>mode=yolo</code>, <code>depth=standard</code>,
+<code>parallelization=true</code>, <code>model_profile=balanced</code>.</li>
+<li><strong>약점:</strong> 방법론이므로 <strong>호스트 에이전트의 모델/비용/프라이버시를 상속합니다</strong>
+(CLI를 로컬 모델로 가리키지 않는 한 Claude Code → 클라우드); <em>일하는 방식</em>을 다스릴 뿐,
+스스로 추론을 실행하거나 제품 런타임을 제공하지는 않습니다.</li>
+</ul>
+<h3 id="langgraph--직접-만드는-오케스트레이션-라이브러리"><a class="header" href="#langgraph--직접-만드는-오케스트레이션-라이브러리">LangGraph — 직접 만드는 오케스트레이션 라이브러리</a></h3>
+<ul>
+<li><strong>용도:</strong> 커스텀하고 상태를 가지며 오래 실행되는 에이전트를 구축하는 <strong>개발자</strong>를 위한 것. 에이전트
+로직을 <strong>그래프/상태 기계</strong>로 모델링합니다: 노드 = 액션(LLM 호출, 도구, 서브에이전트),
+엣지 = 조건부 제어 흐름.</li>
+<li><strong>두드러진 기능:</strong> 체크포인팅을 통한 내구성 있는 실행(크래시 후 재개),
+일급 human-in-the-loop(실행 중 상태 검사/수정), 네이티브 토큰 스트리밍,
+단일/멀티/계층형 에이전트 토폴로지, 내장 메모리. 안정 버전 <strong>v1.0</strong>(2025년 말),
+Klarna, LinkedIn, Uber, Replit에서 프로덕션 사용; DeltaChannel은 체크포인트 저장량을 ~73,000× 줄입니다.</li>
+<li><strong>모델 지원:</strong> LangChain을 통해 프로바이더 비종속적 — 로컬 모델을 포함하므로
+당신의 <code>qwen</code> 엔드포인트를 대상으로 삼을 수 있습니다.</li>
+<li><strong>약점:</strong> 인프라이므로 — <strong>직접 코드를 작성해야 합니다</strong>; 즉시 사용 가능한 어시스턴트,
+코딩 에이전트, UI가 없습니다. 최대의 제어, 최대의 노력.</li>
+</ul>
+<hr>
+<h2 id="3-서로-어떻게-관련되는가-스택으로-쌓을-수-있음"><a class="header" href="#3-서로-어떻게-관련되는가-스택으로-쌓을-수-있음">3. 서로 어떻게 관련되는가 (스택으로 쌓을 수 있음)</a></h2>
+<p>이들은 순수한 경쟁 관계만은 아닙니다 — 일부는 조합됩니다:</p>
+<ul>
+<li><strong>GSD + OpenHands / Claude Code:</strong> GSD는 <em>프로세스</em>를 오케스트레이션하고, 코딩 에이전트가
+<em>작업</em>을 수행합니다. (이 머신에는 실제로 <code>gsd-openhands</code> 프로젝트가 있습니다.)</li>
+<li><strong>제품 내부의 LangGraph:</strong> LangGraph를 하부 엔진으로 삼아 OpenJarvis 유사 또는 OpenHands 유사
+동작을 구축할 수 있습니다.</li>
+<li><strong>로컬 두뇌로서의 OpenJarvis:</strong> 그 OpenAI 호환 서버는 다른 도구를 뒷받침할 수 있으며,
+OpenHands/LangGraph는 OpenJarvis가 사용하는 <em>동일한</em> 로컬 <code>qwen</code> 엔드포인트를 가리킬 수 있습니다.</li>
+</ul>
+<p>진정한 겹침 지점: <strong>OpenJarvis ↔ OpenHands</strong>는 둘 다 “작업을 수행하는 에이전트를 구동“하며(개인 vs.
+소프트웨어 엔지니어링 초점); <strong>GSD ↔ LangGraph</strong>는 둘 다 오케스트레이션/상태를 다룹니다(규정된
+<em>방법</em> vs. 프로그래밍 가능한 <em>라이브러리</em>).</p>
+<hr>
+<h2 id="4-무엇을-사용해야-하나-로컬-qwen-mac-기준"><a class="header" href="#4-무엇을-사용해야-하나-로컬-qwen-mac-기준">4. 무엇을 사용해야 하나? (로컬 Qwen Mac 기준)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>당신의 목표</th><th>최선의 선택</th><th>이유</th></tr>
+</thead>
+<tbody>
+<tr><td>자신의 하드웨어에서 구동되는 프라이빗 비서(채팅, 다이제스트, 리서치, 휴대폰에서 접근)</td><td><strong>OpenJarvis</strong></td><td>로컬 우선으로 특별히 설계됨; 이미 당신의 <code>qwen-122b</code>에 연결됨</td></tr>
+<tr><td>“이 버그를 고쳐라 / 이 기능을 만들어라“를 자율적으로, PR까지 전부</td><td><strong>OpenHands</strong></td><td>전용 SWE 에이전트; LiteLLM을 통해 로컬 Qwen 사용 가능</td></tr>
+<tr><td>크고 여러 주에 걸친 빌드를 context rot 없이 일관되게 유지</td><td><strong>GSD</strong></td><td>phase/verify 프로세스를 규정; 이미 여기 설치됨</td></tr>
+<tr><td>상태와 흐름을 정밀하게 제어하는 <em>자신만의</em> 맞춤 에이전트 구축</td><td><strong>LangGraph</strong></td><td>저수준 그래프 엔진; 필요한 것을 정확히 프로그래밍</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>경험 법칙</strong></p>
+<ul>
+<li>사용할 <em>제품</em>을 원한다면 → OpenJarvis(개인) 또는 OpenHands(코딩).</li>
+<li>따를 <em>프로세스</em>를 원한다면 → GSD.</li>
+<li>그 위에 구축할 <em>라이브러리</em>를 원한다면 → LangGraph.</li>
+<li><strong>프라이버시 / 오프라인이 가장 중요하다면</strong> → OpenJarvis만이 로컬 우선으로 설계되었습니다;
+나머지는 로컬 모델을 <em>사용할 수</em> 있으나 그 목표를 중심으로 만들어지지는 않았습니다.</li>
+</ul>
+<hr>
+<h2 id="sources"><a class="header" href="#sources">Sources</a></h2>
+<ul>
+<li>OpenHands: <a href="https://www.openhands.dev/">openhands.dev</a> · <a href="https://github.com/OpenHands/OpenHands">GitHub</a> · <a href="https://arxiv.org/html/2511.03690v1">Software Agent SDK (arXiv)</a> · <a href="https://docs.openhands.dev/sdk">SDK 문서</a></li>
+<li>LangGraph: <a href="https://www.langchain.com/langgraph">langchain.com/langgraph</a> · <a href="https://github.com/langchain-ai/langgraph">GitHub</a> · <a href="https://docs.langchain.com/oss/python/langgraph/overview">문서</a> · <a href="https://toolbrain.net/blog/langgraph-review-2026/">Review 2026</a></li>
+<li>GSD: <a href="https://github.com/gsd-build/get-shit-done">GitHub (gsd-build/get-shit-done)</a> · <a href="https://gsd-build-get-shit-done.mintlify.app/introduction">문서</a> · <a href="https://www.augmentcode.com/learn/gsd-58k-stars-claude-code">Augment Code 소개글</a> · <a href="https://www.mindstudio.ai/blog/gsd-framework-claude-code-clean-context-phases">MindStudio 가이드</a></li>
+<li>OpenJarvis: <a href="https://github.com/open-jarvis/OpenJarvis">GitHub (open-jarvis/OpenJarvis)</a> + 로컬 설치 문서(<code>SETUP-OpenJarvis.md</code>, <code>USING-OpenJarvis.md</code>, <code>LLM-STACK-REFERENCE.md</code>)</li>
+</ul>
+<p><em>2026-07-01 작성. 스타 수 / 벤치마크 수치는 특정 시점 기준이며 변동됩니다.</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openjarvis-setup--local-qwen-122b-on-apple-silicon-m4-max"><a class="header" href="#openjarvis-setup--local-qwen-122b-on-apple-silicon-m4-max">OpenJarvis Setup — Local qwen-122b on Apple Silicon (M4 Max)</a></h1>
+<p>A reproducible guide to installing OpenJarvis and wiring it to a <strong>local Qwen</strong>
+model that is already served through a <strong>LiteLLM proxy + MLX</strong> stack. Every step
+includes <em>why</em>, so you can adapt it if your environment differs.</p>
+<ul>
+<li><strong>Machine:</strong> Apple M4 Max, 128 GB, macOS 26.x, arm64</li>
+<li><strong>Goal:</strong> OpenJarvis agents run on local <code>qwen-122b</code>, no Ollama, no cloud</li>
+<li><strong>Result:</strong> verified working (<code>jarvis ask</code> returns correct answers via the local model)</li>
+</ul>
+<hr>
+<h2 id="0-prerequisites--the-llm-stack-that-must-already-be-running"><a class="header" href="#0-prerequisites--the-llm-stack-that-must-already-be-running">0. Prerequisites — the LLM stack that must already be running</a></h2>
+<p>This guide assumes you already run your own inference stack (I did not install it
+here — I only connected OpenJarvis to it). For reference, mine is:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Port</th><th>Process</th><th>Role</th></tr>
+</thead>
+<tbody>
+<tr><td><code>:4000</code></td><td><code>litellm --config agent-stack/litellm/config.yaml</code></td><td>OpenAI-compatible <strong>proxy / router</strong> (front door)</td></tr>
+<tr><td><code>:8000</code></td><td><code>mlx_lm.server --model .../qwen36-35b</code></td><td>35B backend</td></tr>
+<tr><td><code>:8001</code></td><td><code>mlx_lm.server --model .../qwen122b</code></td><td>122B backend</td></tr>
+<tr><td><code>:8011</code> / <code>:8012</code></td><td><code>role_shim.py</code></td><td>normalizes system-message ordering for MLX</td></tr>
+<tr><td><code>:8082</code></td><td><code>claude-code-proxy</code></td><td>Anthropic→chat bridge (unrelated to OpenJarvis)</td></tr>
+</tbody>
+</table>
+</div>
+<p>The LiteLLM proxy exposes these model <strong>aliases</strong>: <code>qwen-122b</code>, <code>qwen-35b</code>,
+<code>qwen-local</code>, <code>qwen-122b-codex</code>, <code>qwen-122b-claude</code>, <code>qwen-35b-claude</code>.</p>
+<p><strong>Verify the stack is up before touching OpenJarvis:</strong></p>
+<pre><code class="language-bash"># List models the proxy exposes
+curl -s http://127.0.0.1:4000/v1/models | python3 -m json.tool
+
+# Confirm the model actually answers
+curl -s http://127.0.0.1:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-122b","messages":[{"role":"user","content":"say OK"}],"max_tokens":5}'
+</code></pre>
+<p><em>Why first:</em> OpenJarvis is only a client. If <code>:4000</code> doesn’t answer here, nothing
+downstream will work, and you’d waste time debugging the wrong layer.</p>
+<hr>
+<h2 id="1-understand-the-two-design-decisions-read-before-installing"><a class="header" href="#1-understand-the-two-design-decisions-read-before-installing">1. Understand the two design decisions (read before installing)</a></h2>
+<p>OpenJarvis has a pluggable “engine” layer. Two independent choices define the wiring:</p>
+<h3 id="decision-a--talk-to-the-litellm-proxy-4000-not-raw-mlx-8001"><a class="header" href="#decision-a--talk-to-the-litellm-proxy-4000-not-raw-mlx-8001">Decision A — talk to the LiteLLM proxy (<code>:4000</code>), not raw MLX (<code>:8001</code>)</a></h3>
+<p>I point OpenJarvis at the <strong>proxy</strong>, not directly at MLX.</p>
+<p><em>Why:</em> the proxy is already your front door. Going through it means OpenJarvis
+reuses your clean aliases (<code>qwen-122b</code>, <code>qwen-35b</code>) and your <code>role_shim</code> routing.
+You get a one-word fallback model and can swap to a role-shim-protected alias by
+changing a single string. Going direct to <code>:8001</code> would force you to hardcode the
+model’s <strong>filesystem path</strong> as its name and would bypass the layer you built.</p>
+<h3 id="decision-b--select-an-openai-compatible-engine"><a class="header" href="#decision-b--select-an-openai-compatible-engine">Decision B — select an “OpenAI-compatible” engine</a></h3>
+<p>In OpenJarvis, the engines <code>vllm</code>, <code>sglang</code>, <code>llamacpp</code>, <code>mlx</code>, <code>lmstudio</code>, … are
+<strong>the same code</strong> — each just POSTs to <code>{host}/v1/chat/completions</code>. The name only
+changes a default port and a label; <strong>it does not launch vLLM or MLX.</strong></p>
+<p><em>Why <code>mlx</code>:</em> since your backend really is MLX, use <code>[engine.mlx]</code> as the honest
+label. (<code>vllm</code> would work identically — the name is cosmetic — but <code>mlx</code> is
+clearer.) The truly generic <code>openai-compat</code> engine exists but is <strong>not selectable</strong>
+in <code>config.toml</code> (only via <code>jarvis eval --base-url</code>), so we borrow a registered name.</p>
+<blockquote>
+<p>Net flow: <code>OpenJarvis → generic OpenAI HTTP client → LiteLLM :4000 → MLX :8001</code></p>
+</blockquote>
+<hr>
+<h2 id="2-clone-the-repository"><a class="header" href="#2-clone-the-repository">2. Clone the repository</a></h2>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test
+git clone --depth 1 https://github.com/open-jarvis/OpenJarvis.git
+cd OpenJarvis
+</code></pre>
+<p><em>Why not the one-line installer</em> (<code>curl … install.sh | bash</code>)<em>:</em> it provisions
+<strong>Ollama</strong> and pulls a starter model. You already have a better local stack (MLX),
+so that step is wasted and would add a competing model server. Installing the pip
+package directly skips all of it.</p>
+<hr>
+<h2 id="3-create-a-python-313-virtual-environment-with-uv"><a class="header" href="#3-create-a-python-313-virtual-environment-with-uv">3. Create a Python 3.13 virtual environment with uv</a></h2>
+<pre><code class="language-bash">uv venv --python 3.13 .venv
+</code></pre>
+<p><em>Why 3.13 specifically:</em> OpenJarvis requires <code>python &gt;=3.10,&lt;3.14</code>. The system
+Python here is <strong>3.14</strong>, which is <em>too new</em> and will fail. <code>uv</code> downloads and pins a
+compatible 3.13 interpreter into the venv without touching system Python.</p>
+<hr>
+<h2 id="4-install-the-package-base--server-extra"><a class="header" href="#4-install-the-package-base--server-extra">4. Install the package (base + server extra)</a></h2>
+<pre><code class="language-bash">VIRTUAL_ENV=.venv uv pip install -e ".[server]"
+</code></pre>
+<p><em>Why <code>[server]</code> and nothing heavier:</em></p>
+<ul>
+<li><strong>Base</strong> deps are pure Python and already include the <code>openai</code> client — which is
+all the OpenAI-compatible engine needs. So <code>jarvis ask</code> works with the base install.</li>
+<li><strong><code>server</code></strong> adds FastAPI/uvicorn so <code>jarvis serve</code> / the desktop app can run later.</li>
+<li>I deliberately avoided the <strong><code>desktop</code></strong> extra: that’s the only one pulling the
+<strong>Rust</strong> extension (<code>openjarvis-rust</code>), which triggers a compile. Not needed for CLI use.</li>
+<li>Add <code>tools-search</code> later (<code>".[server,tools-search]"</code>) only if you use web-search tools.</li>
+</ul>
+<hr>
+<h2 id="5-write-the-config-and-install-it"><a class="header" href="#5-write-the-config-and-install-it">5. Write the config and install it</a></h2>
+<p>OpenJarvis reads <code>~/.openjarvis/config.toml</code>. Create this file:</p>
+<pre><code class="language-toml"># OpenJarvis config — wired to local qwen-122b via the LiteLLM proxy (:4000)
+
+[intelligence]
+default_model = "qwen-122b"       # LiteLLM alias -&gt; mlx qwen122b (:8001)
+fallback_model = "qwen-35b"       # lighter/faster fallback (:8000)
+preferred_engine = "mlx"          # OpenAI-compatible client (host points at :4000 below)
+provider = "local"
+quantization = "none"
+temperature = 0.2
+max_tokens = 4096
+top_p = 0.9
+
+[agent]
+default_agent = "orchestrator"    # multi-turn with tool selection
+max_turns = 10
+context_from_memory = true
+
+[tools]
+enabled = ["code_interpreter", "file_read", "file_write", "shell_exec", "web_search", "think", "calculator"]
+
+[tools.storage]
+default_backend = "sqlite"
+db_path = "~/.openjarvis/memory.db"
+
+[tools.mcp]
+enabled = true
+
+[engine]
+default = "mlx"                   # any OpenAI-compatible engine name works; mlx is the honest label
+
+[engine.mlx]
+host = "http://localhost:4000"    # &lt;-- the LiteLLM proxy, NOT raw mlx :8001
+# The proxy currently accepts requests without a client key. If you later enable a
+# LiteLLM master key, export it instead of hardcoding:  export MLX_API_KEY="sk-..."
+# (env var = &lt;ENGINE_ID&gt;_API_KEY, upper-cased)
+
+[server]
+host = "127.0.0.1"
+port = 8090                       # moved off :8000 — see why below
+
+[traces]
+enabled = true
+db_path = "~/.openjarvis/traces.db"
+</code></pre>
+<p>Install it:</p>
+<pre><code class="language-bash">mkdir -p ~/.openjarvis
+cp config.toml ~/.openjarvis/config.toml
+</code></pre>
+<p><em>Why these specific values:</em></p>
+<ul>
+<li><strong><code>host = :4000</code></strong> — Decision A. Sends everything through your proxy.</li>
+<li><strong><code>default_model = "qwen-122b"</code></strong> — the proxy alias, not a path. Clean and swappable.</li>
+<li><strong><code>fallback_model = "qwen-35b"</code></strong> — a working alias, so degradation is graceful.</li>
+<li><strong><code>[server] port = 8090</code></strong> — the OpenJarvis default is <code>8000</code>, which <strong>collides with
+your <code>mlx_lm.server</code> on <code>:8000</code>.</strong> Moving it prevents a startup/port conflict.</li>
+<li><strong>No API key</strong> — the proxy accepted unauthenticated calls in step 0. The keys inside
+<code>agent-stack/litellm/config.yaml</code> are proxy→MLX only; clients don’t need them.</li>
+</ul>
+<hr>
+<h2 id="6-verify-the-config-loads-as-intended"><a class="header" href="#6-verify-the-config-loads-as-intended">6. Verify the config loads as intended</a></h2>
+<pre><code class="language-bash">.venv/bin/jarvis config show
+</code></pre>
+<p>Expect: <code>Default Engine: mlx</code>, <code>Default Model: qwen-122b</code>,
+<code>Fallback Model: qwen-35b</code>, <code>Default Agent: orchestrator</code>.</p>
+<p><em>Why:</em> confirms OpenJarvis parsed the file and resolved the engine/model <strong>before</strong>
+you depend on an answer being correct. (<code>jarvis doctor</code> runs deeper diagnostics.)</p>
+<hr>
+<h2 id="7-smoke-test"><a class="header" href="#7-smoke-test">7. Smoke test</a></h2>
+<pre><code class="language-bash"># 7a. Isolate the model path with the simplest single-turn agent
+.venv/bin/jarvis ask --agent simple "Reply with exactly this and nothing else: JARVIS-WIRED-OK"
+
+# 7b. Exercise the configured default (orchestrator) with a reasoning task
+.venv/bin/jarvis ask "What is 17 * 23? Reply with just the number."
+</code></pre>
+<p>Expected: <code>JARVIS-WIRED-OK</code>, then <code>391</code>.</p>
+<p><em>Why two tests:</em> 7a proves the raw <strong>engine→proxy→model</strong> path in isolation (no tools,
+no multi-turn) — if it fails, the problem is the connection, not the agent. 7b then
+proves the <strong>default agent</strong> you actually configured works end-to-end.</p>
+<hr>
+<h2 id="8-daily-use"><a class="header" href="#8-daily-use">8. Daily use</a></h2>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test/OpenJarvis
+.venv/bin/jarvis ask "..."      # one-shot
+.venv/bin/jarvis chat           # interactive session
+.venv/bin/jarvis serve          # HTTP API on :8090 (needs the [server] extra)
+</code></pre>
+<p>Optional convenience — activate the venv or add it to PATH so you can type bare <code>jarvis</code>:</p>
+<pre><code class="language-bash">source .venv/bin/activate       # per-shell
+# or symlink: ln -s "$PWD/.venv/bin/jarvis" ~/bin/jarvis
+</code></pre>
+<hr>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+</thead>
+<tbody>
+<tr><td><code>jarvis</code> install fails on Python version</td><td>System Python is ≥3.14</td><td>Recreate venv: <code>uv venv --python 3.13 .venv</code> (step 3)</td></tr>
+<tr><td>Connection refused / engine not reachable</td><td>LiteLLM <code>:4000</code> or MLX backend is down</td><td>Re-run the step 0 <code>curl</code> checks; restart the stack</td></tr>
+<tr><td><code>System message must be at the beginning</code> (MLX error)</td><td>An agent injected a mid-conversation system message; plain <code>qwen-122b</code> skips the role-shim</td><td>Set <code>default_model = "qwen-122b-claude"</code> (routes through role-shim on <code>:8011</code>)</td></tr>
+<tr><td>Server won’t start / port in use</td><td><code>:8000</code> collides with <code>mlx_lm.server</code></td><td>Ensure <code>[server] port = 8090</code> (step 5)</td></tr>
+<tr><td><code>web_search</code> tool errors</td><td>Search extra not installed</td><td><code>VIRTUAL_ENV=.venv uv pip install -e ".[server,tools-search]"</code></td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="what-was-installed--touched-for-cleanup-or-audit"><a class="header" href="#what-was-installed--touched-for-cleanup-or-audit">What was installed / touched (for cleanup or audit)</a></h2>
+<ul>
+<li>Repo clone: <code>/Users/ohama/projs/openjarvis-test/OpenJarvis</code> (~144 MB)</li>
+<li>Virtualenv: <code>.venv</code> inside it (Python 3.13.13, uv-provisioned)</li>
+<li>Config: <code>~/.openjarvis/config.toml</code></li>
+<li>Runtime state (created on use): <code>~/.openjarvis/memory.db</code>, <code>~/.openjarvis/traces.db</code></li>
+<li><strong>Not touched:</strong> your LiteLLM/MLX stack, system Python, Ollama (never installed)</li>
+</ul>
+<p>To remove OpenJarvis entirely: delete the clone directory and <code>~/.openjarvis/</code>.</p>
+<hr>
+<h2 id="version-note"><a class="header" href="#version-note">Version note</a></h2>
+<p>The <code>main</code> clone self-reports as a dev build (<code>0.0.1.dev1+…</code>) and flags release
+<code>v1.0.3</code> as available. The dev build tested fine. To use the tagged release instead:</p>
+<pre><code class="language-bash">cd OpenJarvis &amp;&amp; git fetch --tags &amp;&amp; git checkout v1.0.3 &amp;&amp; VIRTUAL_ENV=.venv uv pip install -e ".[server]"
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="local-llm-stack-reference--litellm--qwen-122b--35b-mlx"><a class="header" href="#local-llm-stack-reference--litellm--qwen-122b--35b-mlx">Local LLM Stack Reference — LiteLLM → Qwen 122B / 35B (MLX)</a></h1>
+<p><strong>Purpose:</strong> everything another app needs to talk to the local Qwen models on this
+machine. If a piece of software can point at an <strong>OpenAI-compatible</strong> endpoint, this
+document alone is enough to configure it — no need to inspect the stack yourself.</p>
+<ul>
+<li><strong>Host:</strong> Apple M4 Max, 128 GB, macOS, arm64</li>
+<li><strong>Serving:</strong> Apple <strong>MLX</strong> (<code>mlx_lm.server</code>) behind a <strong>LiteLLM</strong> proxy</li>
+<li><strong>One thing to remember:</strong> point your app at <strong><code>http://localhost:4000/v1</code></strong> and pick a model name from the table below.</li>
+</ul>
+<hr>
+<h2 id="tldr--the-only-two-values-most-apps-need"><a class="header" href="#tldr--the-only-two-values-most-apps-need">TL;DR — the only two values most apps need</a></h2>
+<pre><code>OpenAI-compatible Base URL : http://localhost:4000/v1
+API key                    : (none required — send any non-empty string if the field is mandatory)
+Model name                 : qwen-122b   (heavy)   |   qwen-35b   (fast)
+</code></pre>
+<blockquote>
+<p><strong>OpenAI-compatible:</strong> the base URL above implements the standard OpenAI REST API
+(<code>/v1/models</code>, <code>/v1/chat/completions</code>, streaming via SSE). Any software that supports
+a custom OpenAI base URL / “OpenAI-compatible provider” (OpenJarvis, Open WebUI,
+LibreChat, Continue, Cursor, LangChain, the <code>openai</code> SDK, etc.) works by setting that
+URL and a model name — nothing MLX-specific is exposed to the client.</p>
+</blockquote>
+<hr>
+<h2 id="architecture"><a class="header" href="#architecture">Architecture</a></h2>
+<pre><code>                 ┌────────────────────────────────────────────────────────────┐
+   Your app ───► │  LiteLLM proxy      :4000   (OpenAI-compatible front door)   │
+ (OpenAI API)    └───────┬───────────────────────────┬────────────────────────┘
+                         │                            │
+          plain chat     │                            │  role-shim path (system-msg safe)
+                         ▼                            ▼
+             ┌──────────────────────┐     ┌──────────────────────────────┐
+             │ mlx_lm.server :8001  │     │ role_shim :8011 ──► :8001     │  (122B)
+             │  qwen122b  (122B)    │     │ role_shim :8012 ──► :8000     │  (35B)
+             ├──────────────────────┤     └──────────────────────────────┘
+             │ mlx_lm.server :8000  │
+             │  qwen36-35b (35B)    │
+             └──────────────────────┘
+
+  (claude-code-proxy :8082 sits in front for Anthropic-API clients — see note below)
+</code></pre>
+<p>Everything runs on <code>127.0.0.1</code> (loopback only). The LiteLLM proxy is the intended
+entry point; the <code>:8000</code>/<code>:8001</code> MLX servers and the shims are internal.</p>
+<hr>
+<h2 id="model-catalog-litellm-aliases-on-4000"><a class="header" href="#model-catalog-litellm-aliases-on-4000">Model catalog (LiteLLM aliases on <code>:4000</code>)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Model name</th><th>Size</th><th>Routes to</th><th>Path through</th><th>Use it for</th></tr>
+</thead>
+<tbody>
+<tr><td><code>qwen-122b</code></td><td>122B</td><td>MLX <code>:8001</code></td><td>direct</td><td>Best quality / agents / reasoning</td></tr>
+<tr><td><code>qwen-35b</code></td><td>35B</td><td>MLX <code>:8000</code></td><td>direct</td><td>Fast / lightweight / high-throughput</td></tr>
+<tr><td><code>qwen-local</code></td><td>35B</td><td>MLX <code>:8000</code></td><td>direct</td><td>Legacy alias for <code>qwen-35b</code></td></tr>
+<tr><td><code>qwen-122b-claude</code></td><td>122B</td><td>MLX <code>:8001</code></td><td>via role-shim <code>:8011</code></td><td>122B when the client sends system/developer messages out of order</td></tr>
+<tr><td><code>qwen-35b-claude</code></td><td>35B</td><td>MLX <code>:8000</code></td><td>via role-shim <code>:8012</code></td><td>35B, same role-safe path</td></tr>
+<tr><td><code>qwen-122b-codex</code></td><td>122B</td><td>MLX <code>:8001</code></td><td>Responses→chat bridge + role-shim</td><td>OpenAI <strong>Responses API</strong> / Codex-style clients</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Which to pick:</strong></p>
+<ul>
+<li>Normal OpenAI-compatible app → <strong><code>qwen-122b</code></strong> or <strong><code>qwen-35b</code></strong>.</li>
+<li>If you hit the MLX error <em>“System message must be at the beginning”</em> (some agent
+frameworks inject system messages mid-conversation) → switch to the <strong><code>*-claude</code></strong>
+variant, which normalizes message roles.</li>
+<li>If your client speaks the <strong>Responses API</strong> (not chat/completions) → <strong><code>qwen-122b-codex</code></strong>.</li>
+</ul>
+<hr>
+<h2 id="serving-parameters-fixed-at-launch"><a class="header" href="#serving-parameters-fixed-at-launch">Serving parameters (fixed at launch)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Backend</th><th>Model dir</th><th>Port</th><th>Max tokens</th><th>Thinking</th></tr>
+</thead>
+<tbody>
+<tr><td>122B</td><td><code>/Users/ohama/llm-system/models/qwen122b</code></td><td><code>:8001</code></td><td>16384</td><td>disabled (<code>enable_thinking:false</code>)</td></tr>
+<tr><td>35B</td><td><code>/Users/ohama/llm-system/models/qwen36-35b</code></td><td><code>:8000</code></td><td>8192</td><td>disabled (<code>enable_thinking:false</code>)</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><code>max-tokens</code> is the server-side ceiling for <strong>output</strong> length; requesting more is clamped.</li>
+<li>Thinking/reasoning traces are disabled server-side, so responses are the final answer only.</li>
+</ul>
+<hr>
+<h2 id="verify-the-stack-is-up-run-before-configuring-any-app"><a class="header" href="#verify-the-stack-is-up-run-before-configuring-any-app">Verify the stack is up (run before configuring any app)</a></h2>
+<pre><code class="language-bash"># 1. Is the proxy answering, and what models does it expose?
+curl -s http://localhost:4000/v1/models | python3 -m json.tool
+
+# 2. Does the 122B model actually generate?
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-122b","messages":[{"role":"user","content":"say OK"}],"max_tokens":5}'
+
+# 3. Same check for the 35B
+curl -s http://localhost:4000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-35b","messages":[{"role":"user","content":"say OK"}],"max_tokens":5}'
+</code></pre>
+<p>If (1) lists the aliases and (2)/(3) return a completion, any OpenAI-compatible app
+will work. If not, the problem is the stack, not your app.</p>
+<hr>
+<h2 id="how-to-configure-common-openai-compatible-software"><a class="header" href="#how-to-configure-common-openai-compatible-software">How to configure common OpenAI-compatible software</a></h2>
+<p>Set the base URL and model; leave the key blank or use any placeholder.</p>
+<p><strong>Generic (env vars used by the <code>openai</code> SDK, LangChain, many tools):</strong></p>
+<pre><code class="language-bash">export OPENAI_BASE_URL="http://localhost:4000/v1"
+export OPENAI_API_KEY="local"        # any non-empty value; the proxy ignores it
+# then use model = "qwen-122b"
+</code></pre>
+<p><strong>Python <code>openai</code> SDK:</strong></p>
+<pre><code class="language-python">from openai import OpenAI
+client = OpenAI(base_url="http://localhost:4000/v1", api_key="local")
+resp = client.chat.completions.create(
+    model="qwen-122b",
+    messages=[{"role": "user", "content": "Hello"}],
+)
+</code></pre>
+<p><strong>TOML/YAML-config apps (e.g. OpenJarvis’s OpenAI-compatible engine):</strong></p>
+<pre><code class="language-toml"># OpenAI-compatible engine → point host at the LiteLLM proxy, pick a model alias
+[engine]
+default = "mlx"                     # any "OpenAI-compatible" engine label works
+[engine.mlx]
+host = "http://localhost:4000"      # NOT the raw MLX port; the proxy is the front door
+# model = "qwen-122b"
+# API key only needed if you later enable a LiteLLM master key (see below)
+</code></pre>
+<p><strong>Rule of thumb:</strong> wherever the app asks for an “OpenAI API base URL”, “custom endpoint”,
+or “OpenAI-compatible provider”, enter <code>http://localhost:4000/v1</code> and choose a model
+name from the catalog.</p>
+<hr>
+<h2 id="notes--gotchas"><a class="header" href="#notes--gotchas">Notes &amp; gotchas</a></h2>
+<ul>
+<li><strong>No auth today.</strong> The proxy currently accepts unauthenticated requests. The API keys
+inside <code>agent-stack/litellm/config.yaml</code> are used by LiteLLM to reach the MLX backends
+— clients don’t need them. If you later enable a LiteLLM <strong>master key</strong>, every app must
+then send <code>Authorization: Bearer &lt;key&gt;</code>.</li>
+<li><strong><code>/v1</code> suffix.</strong> Include <code>/v1</code> when the app wants a full base URL. Some apps append it
+themselves — if you see <code>/v1/v1</code> in errors, drop the suffix.</li>
+<li><strong>Port <code>:8000</code> is taken</strong> by the 35B MLX server. If you run another app with a server of
+its own, bind it to a different port.</li>
+<li><strong>Loopback only.</strong> Nothing is exposed to the LAN. To serve other devices you’d change the
+proxy bind address and add a key — out of scope here.</li>
+<li><strong>Anthropic-API clients</strong> (e.g. Claude Code) can use <code>claude-code-proxy</code> on <code>:8082</code>, which
+converts Anthropic → chat and forwards into this same stack. Standard apps should use the
+OpenAI-compatible <code>:4000</code> path above.</li>
+</ul>
+<hr>
+<h2 id="component-map-for-maintenancedebugging-only--apps-dont-need-this"><a class="header" href="#component-map-for-maintenancedebugging-only--apps-dont-need-this">Component map (for maintenance/debugging only — apps don’t need this)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Component</th><th>Command</th><th>Port</th><th>Config / logs</th></tr>
+</thead>
+<tbody>
+<tr><td>LiteLLM proxy</td><td><code>agent-stack/venv/bin/litellm --config agent-stack/litellm/config.yaml --port 4000</code></td><td><code>:4000</code></td><td><code>agent-stack/litellm/config.yaml</code></td></tr>
+<tr><td>MLX 122B</td><td><code>mlx_lm.server --model .../qwen122b --port 8001 --max-tokens 16384</code></td><td><code>:8001</code></td><td><code>llm-system/services/logs/122b.*</code></td></tr>
+<tr><td>MLX 35B</td><td><code>mlx_lm.server --model .../qwen36-35b --port 8000 --max-tokens 8192</code></td><td><code>:8000</code></td><td><code>llm-system/services/logs/36-35b.*</code></td></tr>
+<tr><td>Role-shim (122B)</td><td><code>role_shim.py --listen 8011 --upstream http://localhost:8001</code></td><td><code>:8011</code></td><td><code>llm-system/services/logs/role-shim.*</code></td></tr>
+<tr><td>Role-shim (35B)</td><td><code>role_shim.py --listen 8012 --upstream http://localhost:8000</code></td><td><code>:8012</code></td><td><code>llm-system/services/logs/role-shim-35b.*</code></td></tr>
+<tr><td>Claude-code proxy</td><td><code>claude-code-proxy -s</code></td><td><code>:8082</code></td><td><code>agent-stack/claude-code-proxy/</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Role-shim purpose:</strong> <code>mlx_lm.server</code> requires any system message to be the first
+message and rejects the OpenAI Responses <code>developer</code> role. The shim rewrites messages
+(first <code>system</code>/<code>developer</code> → <code>system</code> kept at front; later ones → <code>user</code>) and forwards
+everything else byte-for-byte, including streaming. That’s why the <code>*-claude</code> / <code>-codex</code>
+aliases exist.</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="using-openjarvis--detailed-guide"><a class="header" href="#using-openjarvis--detailed-guide">Using OpenJarvis — Detailed Guide</a></h1>
+<p>How to actually <em>use</em> the OpenJarvis install on this machine (wired to local
+<code>qwen-122b</code> / <code>qwen-35b</code> — see <code>SETUP-OpenJarvis.md</code> for how it was installed and
+<code>LLM-STACK-REFERENCE.md</code> for the model endpoint details).</p>
+<ul>
+<li><strong>CLI binary:</strong> <code>/Users/ohama/projs/openjarvis-test/OpenJarvis/.venv/bin/jarvis</code></li>
+<li><strong>Config:</strong> <code>~/.openjarvis/config.toml</code> (model <code>qwen-122b</code>, engine → LiteLLM <code>:4000</code>, API server port <code>8090</code>)</li>
+<li>Throughout this doc, <code>jarvis</code> means that venv binary. To type bare <code>jarvis</code>, run
+<code>source .venv/bin/activate</code> or symlink it onto your PATH.</li>
+</ul>
+<blockquote>
+<p><strong>Includes the answer to “can I use it from my iPhone?” — see section 7.</strong></p>
+</blockquote>
+<hr>
+<h2 id="1-the-fastest-ways-to-use-it"><a class="header" href="#1-the-fastest-ways-to-use-it">1. The fastest ways to use it</a></h2>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test/OpenJarvis
+
+# One-shot question (uses your default agent + qwen-122b)
+.venv/bin/jarvis ask "Summarize the theory of relativity in 3 bullets"
+
+# Interactive multi-turn conversation
+.venv/bin/jarvis chat
+
+# Guided setup / feature tour for new users
+.venv/bin/jarvis quickstart
+
+# Diagnostics — checks config, engine reachability, model, etc.
+.venv/bin/jarvis doctor
+</code></pre>
+<p><code>ask</code> streams the answer by default. Add <code>--no-stream</code> for a single block, or
+<code>--json</code> to get the raw result object (useful for scripting).</p>
+<hr>
+<h2 id="2-jarvis-ask--the-workhorse"><a class="header" href="#2-jarvis-ask--the-workhorse">2. <code>jarvis ask</code> — the workhorse</a></h2>
+<p>Common options (from <code>jarvis ask --help</code>):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Flag</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>-m, --model</code></td><td>Override the model, e.g. <code>-m qwen-35b</code> for a faster answer</td></tr>
+<tr><td><code>-a, --agent</code></td><td>Pick an agent: <code>simple</code> (single-turn, no tools), <code>orchestrator</code> (multi-turn + tools), <code>react</code>, <code>openhands</code>. <code>--agent ''</code> = talk straight to the model</td></tr>
+<tr><td><code>--tools</code></td><td>Restrict tools for this call, e.g. <code>--tools calculator,think</code></td></tr>
+<tr><td><code>-t, --temperature</code> / <code>--max-tokens</code></td><td>Sampling overrides</td></tr>
+<tr><td><code>--research</code></td><td>Answer from your indexed personal knowledge (BM25 + embeddings)</td></tr>
+<tr><td><code>-i, --image FILE</code> / <code>-S, --screen</code></td><td>Send an image / a screenshot to a vision model</td></tr>
+<tr><td><code>--profile</code></td><td>Print latency / tokens / energy telemetry for the call</td></tr>
+<tr><td><code>--no-context</code></td><td>Skip injecting memory context</td></tr>
+</tbody>
+</table>
+</div>
+<p>Examples:</p>
+<pre><code class="language-bash">.venv/bin/jarvis ask -m qwen-35b "quick: capital of Japan?"
+.venv/bin/jarvis ask --agent simple --tools calculator "what is 19% of 4,320?"
+.venv/bin/jarvis ask -S "what's on my screen right now?"      # needs a vision model
+</code></pre>
+<hr>
+<h2 id="3-agents-tools-skills"><a class="header" href="#3-agents-tools-skills">3. Agents, tools, skills</a></h2>
+<ul>
+<li><strong>Agents</strong> decide <em>how</em> a request is handled. <code>simple</code> just answers; <code>orchestrator</code>
+can call tools across multiple turns; <code>openhands</code>/<code>react</code> are code/agentic styles.
+Set the default in <code>config.toml</code> (<code>[agent] default_agent</code>) or override per call.</li>
+<li><strong>Persistent agents:</strong> <code>jarvis agents</code> — create named agents with their own
+persona/config, inspect them, and chat with them.</li>
+<li><strong>Tools</strong> are capabilities the agent can invoke (<code>code_interpreter</code>, <code>file_read</code>,
+<code>file_write</code>, <code>shell_exec</code>, <code>web_search</code>, <code>calculator</code>, <code>think</code>, memory/knowledge
+search…). List them with <code>jarvis tool list</code>. Enable per call with <code>--tools</code> or
+globally in <code>[tools] enabled = [...]</code>.</li>
+<li><strong>Skills:</strong> <code>jarvis skill</code> — reusable saved capabilities. <strong>MCP servers:</strong> add
+external tool servers with <code>jarvis add</code> (and <code>[tools.mcp] enabled = true</code>).</li>
+</ul>
+<blockquote>
+<p>Note: some tools need extra installs. <code>web_search</code> wants the search extra:
+<code>VIRTUAL_ENV=.venv uv pip install -e ".[server,tools-search]"</code>.</p>
+</blockquote>
+<hr>
+<h2 id="4-memory-data-connections--deep-research"><a class="header" href="#4-memory-data-connections--deep-research">4. Memory, data connections &amp; deep research</a></h2>
+<p>OpenJarvis can answer over <em>your</em> data:</p>
+<pre><code class="language-bash"># Connect data sources (Gmail, Obsidian, local folders, …)
+.venv/bin/jarvis connect            # see available connectors
+
+# Index documents into the knowledge store
+.venv/bin/jarvis memory index ~/Documents/papers/
+
+# Ask questions that search your indexed data
+.venv/bin/jarvis ask --research "what did the Q2 planning notes conclude?"
+
+# Or the one-shot auto-setup that detects local sources and launches research
+.venv/bin/jarvis deep-research-setup
+</code></pre>
+<p>Memory/knowledge is stored in <code>~/.openjarvis/*.db</code> (sqlite by default, per your config).</p>
+<hr>
+<h2 id="5-automation--scheduler-operators-digest-workflows"><a class="header" href="#5-automation--scheduler-operators-digest-workflows">5. Automation — scheduler, operators, digest, workflows</a></h2>
+<ul>
+<li><code>jarvis digest</code> — the “morning digest” (needs a digest config/agent).</li>
+<li><code>jarvis scheduler</code> — schedule recurring tasks (cron-style).</li>
+<li><code>jarvis operators</code> — persistent, scheduled autonomous agents (e.g. monitors).</li>
+<li><code>jarvis workflow</code> — list/run/inspect multi-step workflows.</li>
+</ul>
+<p>These turn Jarvis from an on-demand assistant into a background one.</p>
+<hr>
+<h2 id="6-running-it-as-a-server--daemon-foundation-for-remote--app-access"><a class="header" href="#6-running-it-as-a-server--daemon-foundation-for-remote--app-access">6. Running it as a server / daemon (foundation for remote &amp; app access)</a></h2>
+<p>OpenJarvis can expose an <strong>OpenAI-compatible HTTP API</strong> and run as a background daemon.</p>
+<pre><code class="language-bash"># Foreground server (Ctrl-C to stop)
+.venv/bin/jarvis serve                       # binds to config: 127.0.0.1:8090
+
+# Background daemon + lifecycle
+.venv/bin/jarvis start                        # start daemon
+.venv/bin/jarvis status                       # is it running?
+.venv/bin/jarvis restart / stop
+</code></pre>
+<p>Once serving, it speaks the standard OpenAI API, so <strong>other software can point at it</strong>
+just like it points at LiteLLM:</p>
+<pre><code class="language-bash">curl http://localhost:8090/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-122b","messages":[{"role":"user","content":"hi"}]}'
+</code></pre>
+<blockquote>
+<p>Requires the <code>server</code> extra (already installed here). By default it binds to
+loopback only — see the next section to reach it from other devices.</p>
+</blockquote>
+<hr>
+<h2 id="7-can-i-use-it-from-my-iphone"><a class="header" href="#7-can-i-use-it-from-my-iphone">7. Can I use it from my iPhone?</a></h2>
+<p><strong>Short answer: Yes — but not via a dedicated App Store app.</strong> OpenJarvis ships a
+desktop GUI (<code>.dmg</code>/<code>.exe</code>/<code>.deb</code>/…) and a CLI; there is <strong>no native iOS app</strong>. To use
+it from an iPhone you connect to the instance running on this Mac, in one of three ways.
+The Mac must be <strong>on and the relevant daemon running</strong> for any of them.</p>
+<h3 id="option-a--messaging-channels-easiest-feels-native--recommended"><a class="header" href="#option-a--messaging-channels-easiest-feels-native--recommended">Option A — Messaging channels (easiest, feels native) ✅ recommended</a></h3>
+<p>OpenJarvis has a <strong>multi-channel gateway</strong>: you chat with Jarvis inside a messaging app
+you already have on your iPhone, and it replies using your local <code>qwen-122b</code>.</p>
+<p>Supported channels include <strong>Telegram, WhatsApp, Slack, Discord, and iMessage/SMS</strong>
+(iMessage/SMS is via the third-party <strong>SendBlue</strong> service).</p>
+<pre><code class="language-bash">.venv/bin/jarvis channel list          # see channel types
+.venv/bin/jarvis gateway start         # run the multi-channel gateway daemon
+.venv/bin/jarvis gateway status
+.venv/bin/jarvis channels imessage-start &lt;CHAT_IDENTIFIER&gt;   # iMessage path
+</code></pre>
+<ul>
+<li><strong>Telegram</strong> is usually the simplest: create a bot token, put it in the channel
+config, <code>gateway start</code>, then message your bot from the Telegram app on your iPhone.</li>
+<li><strong>iMessage</strong> lets you text Jarvis from the stock Messages app, but needs a SendBlue
+account (paid third party) — heavier to set up.</li>
+<li><strong>Why this is best for iPhone:</strong> nothing to expose on your network, works from
+anywhere with internet, and the UI is a chat app you already trust.</li>
+</ul>
+<h3 id="option-b--reach-the-http-api-over-your-network-"><a class="header" href="#option-b--reach-the-http-api-over-your-network-">Option B — Reach the HTTP API over your network 🌐</a></h3>
+<p>Run the server bound to your LAN and hit it from the iPhone. This needs a key
+(startup <strong>refuses</strong> a non-loopback bind without one):</p>
+<pre><code class="language-bash">.venv/bin/jarvis auth generate-key                  # create an API key
+.venv/bin/jarvis serve --host 0.0.0.0 --port 8090   # bind to the LAN
+</code></pre>
+<p>Then from the iPhone (same Wi-Fi):</p>
+<ul>
+<li>Point any <strong>OpenAI-compatible iOS chat app</strong> (or Apple <strong>Shortcuts</strong> with a “Get
+Contents of URL” POST) at <code>http://&lt;mac-LAN-IP&gt;:8090/v1</code>, model <code>qwen-122b</code>, and send
+the API key as <code>Authorization: Bearer &lt;key&gt;</code>.</li>
+<li>Or just open <code>http://&lt;mac-LAN-IP&gt;:8090/</code> in Safari if the GUI/web endpoint is served.</li>
+</ul>
+<p>Find the Mac’s LAN IP with <code>ipconfig getifaddr en0</code>. This only works while the iPhone
+is on the <strong>same network</strong> as the Mac. For access <strong>away from home</strong>, use a private
+mesh VPN like <strong>Tailscale</strong> (install on both devices; use the Mac’s Tailscale IP instead
+of the LAN IP) — no ports exposed to the public internet.</p>
+<h3 id="option-c--public-tunnel-access-from-anywhere-"><a class="header" href="#option-c--public-tunnel-access-from-anywhere-">Option C — Public tunnel (access from anywhere) 🚇</a></h3>
+<p>OpenJarvis has a built-in Cloudflare tunnel:</p>
+<pre><code class="language-bash">.venv/bin/jarvis serve --host 127.0.0.1 --port 8090   # keep it loopback
+.venv/bin/jarvis tunnel --port 8090                   # expose via Cloudflare
+.venv/bin/jarvis tunnel status
+</code></pre>
+<p>This gives a public HTTPS URL you can open from the iPhone anywhere. <strong>Always keep an
+API key enabled</strong> when doing this — a tunnel is reachable by anyone with the URL.</p>
+<h3 id="which-should-you-pick"><a class="header" href="#which-should-you-pick">Which should you pick?</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Want</th><th>Use</th></tr>
+</thead>
+<tbody>
+<tr><td>Simplest, chat-app feel, works anywhere</td><td><strong>A — Telegram channel</strong></td></tr>
+<tr><td>Text Jarvis from the Messages app</td><td>A — iMessage (needs SendBlue)</td></tr>
+<tr><td>Use an OpenAI-compatible iOS app / Shortcuts, at home</td><td><strong>B — LAN server + key</strong></td></tr>
+<tr><td>Same, but also away from home, privately</td><td>B + <strong>Tailscale</strong></td></tr>
+<tr><td>A public URL from anywhere</td><td><strong>C — Cloudflare tunnel</strong> (+ key)</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="security-reminders-for-iphone-access"><a class="header" href="#security-reminders-for-iphone-access">Security reminders for iPhone access</a></h3>
+<ul>
+<li>Never bind to <code>0.0.0.0</code> or open a tunnel <strong>without an API key</strong>.</li>
+<li>Prefer Tailscale over port-forwarding your router.</li>
+<li>Your prompts leave the Mac only for the channel/tunnel provider you choose; the model
+itself still runs locally on <code>qwen-122b</code>.</li>
+</ul>
+<hr>
+<h2 id="8-housekeeping"><a class="header" href="#8-housekeeping">8. Housekeeping</a></h2>
+<pre><code class="language-bash">.venv/bin/jarvis config show      # what config is loaded
+.venv/bin/jarvis doctor           # health checks
+.venv/bin/jarvis scan             # privacy/security audit of the environment
+.venv/bin/jarvis telemetry ...    # latency/token/energy stats of past calls
+.venv/bin/jarvis self-update      # upgrade (or use the git/uv method in SETUP doc)
+</code></pre>
+<p><strong>Related docs in this folder:</strong></p>
+<ul>
+<li><code>SETUP-OpenJarvis.md</code> — how this install was set up (and how to redo it)</li>
+<li><code>LLM-STACK-REFERENCE.md</code> — the LiteLLM → Qwen endpoint reference for any OpenAI-compatible app</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openjarvis-telegram-channel--setup--usage"><a class="header" href="#openjarvis-telegram-channel--setup--usage">OpenJarvis Telegram Channel — Setup &amp; Usage</a></h1>
+<p>Chat with your local <code>qwen-122b</code> from the <strong>Telegram app on any device (incl. iPhone)</strong>.
+Messages you send to a private bot are answered by OpenJarvis running on this Mac.</p>
+<ul>
+<li><strong>How it works:</strong> OpenJarvis uses Telegram <strong>long polling</strong> — it <em>pulls</em> messages from
+Telegram’s servers. So <strong>no public URL, no open ports, no tunnel</strong> are needed. The Mac
+just needs internet + the gateway daemon running.</li>
+<li><strong>Where the model runs:</strong> locally (<code>qwen-122b</code> via LiteLLM). Only the message text
+transits Telegram’s servers; inference stays on your machine.</li>
+<li><strong>Config file:</strong> <code>~/.openjarvis/config.toml</code> (the <code>[channel]</code> / <code>[channel.telegram]</code>
+sections were already added — see step 2).</li>
+</ul>
+<hr>
+<h2 id="whats-already-done-vs-what-you-must-do"><a class="header" href="#whats-already-done-vs-what-you-must-do">What’s already done vs. what you must do</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Done for you</th><th>You must do (one-time)</th></tr>
+</thead>
+<tbody>
+<tr><td><code>[channel] enabled = true</code>, <code>default_channel = "telegram"</code> added to config</td><td>Create a bot with <strong>@BotFather</strong> and get its <strong>token</strong></td></tr>
+<tr><td><code>[channel.telegram]</code> section scaffolded with a placeholder token</td><td>Paste the token into config (step 2)</td></tr>
+<tr><td><code>python-telegram-bot</code> installed; config verified to parse</td><td>(Recommended) lock the bot to your chat ID (step 3)</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>jarvis channel status --channel-type telegram</code> currently reports <strong>disconnected</strong>
+because the token is still the placeholder <code>REPLACE_WITH_BOTFATHER_TOKEN</code>.</p>
+<hr>
+<h2 id="step-1--create-your-bot-in-the-telegram-app"><a class="header" href="#step-1--create-your-bot-in-the-telegram-app">Step 1 — Create your bot (in the Telegram app)</a></h2>
+<ol>
+<li>Open Telegram, search for <strong>@BotFather</strong> (the official one, blue check), start a chat.</li>
+<li>Send <code>/newbot</code>.</li>
+<li>Give it a <strong>name</strong> (display name, anything) and a <strong>username</strong> (must end in <code>bot</code>,
+e.g. <code>ohama_jarvis_bot</code>).</li>
+<li>BotFather replies with a <strong>token</strong> like:
+<code>123456789:AAExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</code>
+Keep it secret — it’s the full credential to control the bot.</li>
+</ol>
+<p>Optional BotFather niceties: <code>/setdescription</code>, <code>/setuserpic</code>, and <code>/setprivacy</code> →
+<strong>Disable</strong> if you later want it in group chats.</p>
+<hr>
+<h2 id="step-2--add-the-token"><a class="header" href="#step-2--add-the-token">Step 2 — Add the token</a></h2>
+<p>Edit <code>~/.openjarvis/config.toml</code>, in the <code>[channel.telegram]</code> section, replace the
+placeholder:</p>
+<pre><code class="language-toml">[channel]
+enabled = true
+default_channel = "telegram"
+
+[channel.telegram]
+bot_token = "123456789:AAExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"   # &lt;- your BotFather token
+# allowed_chat_ids = "..."   # see step 3
+</code></pre>
+<p><strong>Alternative (keeps the secret out of the file):</strong> leave <code>bot_token = ""</code> and export
+an env var in the shell that runs the gateway:</p>
+<pre><code class="language-bash">export TELEGRAM_BOT_TOKEN="123456789:AAE..."
+</code></pre>
+<p>OpenJarvis reads <code>TELEGRAM_BOT_TOKEN</code> when <code>bot_token</code> is empty.</p>
+<hr>
+<h2 id="step-3--lock-it-to-you-recommended"><a class="header" href="#step-3--lock-it-to-you-recommended">Step 3 — Lock it to you (recommended)</a></h2>
+<p>Without an allow-list, <strong>anyone who discovers the bot’s username can use it</strong> (and burn
+your local GPU / read whatever tools you enabled). Restrict it to your own chat ID:</p>
+<ol>
+<li>Temporarily start the gateway (step 4) with just the token set.</li>
+<li>Send any message to your bot from Telegram.</li>
+<li>Run <code>jarvis channel status --channel-type telegram</code> (or check <code>gateway logs</code>) to see
+the incoming chat ID. Alternatively message <strong>@userinfobot</strong> in Telegram — it replies
+with your numeric ID.</li>
+<li>Put it in config and restart the gateway:
+<pre><code class="language-toml">[channel.telegram]
+allowed_chat_ids = "123456789"          # comma-separate multiple: "111,222"
+</code></pre>
+</li>
+</ol>
+<p>Messages from any other chat ID are then ignored.</p>
+<hr>
+<h2 id="step-4--start-the-gateway"><a class="header" href="#step-4--start-the-gateway">Step 4 — Start the gateway</a></h2>
+<p>The <strong>gateway</strong> is the daemon that runs your enabled channels.</p>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test/OpenJarvis
+
+.venv/bin/jarvis gateway start      # start the multi-channel gateway (background daemon)
+.venv/bin/jarvis gateway status     # confirm it's running
+.venv/bin/jarvis gateway logs       # tail logs (useful for the step-3 chat ID)
+.venv/bin/jarvis gateway stop       # stop it
+</code></pre>
+<p>Verify the channel itself connected:</p>
+<pre><code class="language-bash">.venv/bin/jarvis channel status --channel-type telegram   # want: Status: connected
+</code></pre>
+<blockquote>
+<p>The Mac must stay awake for the bot to respond. For always-on use, disable App Nap /
+sleep, or keep it plugged in with “prevent sleeping” on.</p>
+</blockquote>
+<hr>
+<h2 id="using-it"><a class="header" href="#using-it">Using it</a></h2>
+<ul>
+<li>Open your bot in Telegram (from the BotFather link or search its username) and just
+<strong>send a message</strong> — e.g. <em>“summarize the news on fusion energy in 3 bullets”</em>.</li>
+<li>It replies using your <strong>default agent + model</strong> from config (<code>orchestrator</code> + <code>qwen-122b</code>).
+Long replies are auto-split at Telegram’s 4096-char limit.</li>
+<li>Works from <strong>any device signed into your Telegram</strong> — iPhone, iPad, desktop — since
+the bot lives in your Telegram account, not on one device.</li>
+</ul>
+<h3 id="send-an-outbound-message-from-the-cli-notifications"><a class="header" href="#send-an-outbound-message-from-the-cli-notifications">Send an outbound message from the CLI (notifications)</a></h3>
+<p>You can also push messages <em>to</em> Telegram from scripts:</p>
+<pre><code class="language-bash">.venv/bin/jarvis channel send telegram "Build finished ✅"
+</code></pre>
+<hr>
+<h2 id="managing--troubleshooting"><a class="header" href="#managing--troubleshooting">Managing &amp; troubleshooting</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Status: disconnected</code></td><td>Token still placeholder / wrong</td><td>Put the real BotFather token in config (step 2)</td></tr>
+<tr><td>Bot never replies</td><td>Gateway not running</td><td><code>jarvis gateway start</code>; check <code>gateway logs</code></td></tr>
+<tr><td>Bot ignores you specifically</td><td>Your chat ID not in <code>allowed_chat_ids</code></td><td>Add your ID, or clear the allow-list to test</td></tr>
+<tr><td>Replies stop when you close the laptop</td><td>Mac slept</td><td>Keep it awake / plugged in</td></tr>
+<tr><td>Someone else could use it</td><td>No allow-list</td><td>Set <code>allowed_chat_ids</code> (step 3)</td></tr>
+<tr><td>Token leaked</td><td>—</td><td>In BotFather: <code>/revoke</code> to issue a new token, then update config</td></tr>
+</tbody>
+</table>
+</div>
+<p>Useful:</p>
+<pre><code class="language-bash">.venv/bin/jarvis config show                         # confirm channel config loaded
+.venv/bin/jarvis channel status --channel-type telegram
+.venv/bin/jarvis gateway logs
+</code></pre>
+<hr>
+<h2 id="security-notes"><a class="header" href="#security-notes">Security notes</a></h2>
+<ul>
+<li><strong>Set <code>allowed_chat_ids</code></strong> unless you truly want the bot open — it consumes your local
+compute and can invoke whatever tools the default agent has (<code>shell_exec</code>, <code>file_write</code>, …).</li>
+<li>Consider giving the Telegram-facing setup a <strong>less powerful default agent/tools</strong> if you
+won’t lock the allow-list.</li>
+<li>The <strong>token is a secret</strong>. Prefer the <code>TELEGRAM_BOT_TOKEN</code> env var over committing it to
+files; <code>/revoke</code> in BotFather if it ever leaks.</li>
+<li>Message text does pass through <strong>Telegram’s servers</strong> (not end-to-end encrypted for bots).
+The model and your data stay local, but don’t send secrets you wouldn’t put in a normal
+Telegram chat.</li>
+</ul>
+<hr>
+<h2 id="related-docs"><a class="header" href="#related-docs">Related docs</a></h2>
+<ul>
+<li><code>USING-OpenJarvis.md</code> — full CLI/usage guide (Telegram is one of several channels)</li>
+<li><code>LLM-STACK-REFERENCE.md</code> — the local model endpoint the bot answers with</li>
+<li><code>SETUP-OpenJarvis.md</code> — how this OpenJarvis install was built</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openjarvis-vs-openhands-vs-gsd-vs-langgraph--detailed-comparison"><a class="header" href="#openjarvis-vs-openhands-vs-gsd-vs-langgraph--detailed-comparison">OpenJarvis vs. OpenHands vs. GSD vs. LangGraph — Detailed Comparison</a></h1>
+<p>A feature comparison of four popular agent tools, written with an eye to <strong>this
+machine’s setup</strong> (local <code>qwen-122b</code>/<code>qwen-35b</code> via LiteLLM on an Apple M4 Max).</p>
+<blockquote>
+<p><strong>Read this first — they are not the same category.</strong> Comparing their “features”
+head-to-head is a bit apples-to-oranges. They sit at different layers:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Tool</th><th>What it fundamentally <em>is</em></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>OpenJarvis</strong></td><td>A <strong>personal-assistant runtime/platform</strong> — runs local-first AI agents for <em>you</em> (chat, digests, monitors, research), reachable from many channels</td></tr>
+<tr><td><strong>OpenHands</strong></td><td>An <strong>autonomous software-engineering agent</strong> — writes code, runs terminals, opens PRs</td></tr>
+<tr><td><strong>GSD</strong> (Get Shit Done)</td><td>A <strong>spec-driven workflow/methodology</strong> layered <em>on top of</em> a coding agent (Claude Code, etc.) — it orchestrates the human+AI <em>process</em>, it is not a runtime</td></tr>
+<tr><td><strong>LangGraph</strong></td><td>A <strong>low-level library/SDK</strong> for <em>developers</em> to build stateful agent graphs in Python/JS</td></tr>
+</tbody>
+</table>
+</div>
+<p>So the real question is usually “which layer do I need?” not “which is best.”</p>
+</blockquote>
+<hr>
+<h2 id="1-at-a-glance-matrix"><a class="header" href="#1-at-a-glance-matrix">1. At-a-glance matrix</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Dimension</th><th><strong>OpenJarvis</strong></th><th><strong>OpenHands</strong></th><th><strong>GSD</strong></th><th><strong>LangGraph</strong></th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Category</strong></td><td>Personal AI agent platform</td><td>Autonomous SWE agent</td><td>Dev workflow / meta-prompting system</td><td>Agent orchestration library</td></tr>
+<tr><td><strong>Primary user</strong></td><td>End user / tinkerer</td><td>Developer / team</td><td>Developer using Claude Code et al.</td><td>Developer building agents</td></tr>
+<tr><td><strong>You interact via</strong></td><td>CLI, chat, messaging channels, GUI, HTTP API</td><td>Browser “Agent Canvas”, SDK, CLI</td><td>Slash commands inside Claude Code</td><td>Your own code (Python/JS)</td></tr>
+<tr><td><strong>Main job</strong></td><td>Be a local personal assistant</td><td>Complete coding tasks end-to-end</td><td>Keep long projects coherent (beats context rot)</td><td>Provide graph/state machinery you program</td></tr>
+<tr><td><strong>Local-first / privacy</strong></td><td>✅ Core design goal (runs on your HW)</td><td>⚠️ Self-hostable, but sandbox + cloud-oriented</td><td>➖ Inherits host agent (e.g. Claude Code → cloud)</td><td>➖ Provider-agnostic; you choose</td></tr>
+<tr><td><strong>Runs local models (Ollama/MLX/vLLM)</strong></td><td>✅ Built-in engines + OpenAI-compat</td><td>✅ Supports Qwen/Llama via LiteLLM</td><td>➖ Whatever the host CLI uses</td><td>✅ Via LangChain provider bindings</td></tr>
+<tr><td><strong>Multi-agent orchestration</strong></td><td>✅ Agents + gateway + operators</td><td>✅ Multi-agent, delegation</td><td>✅ Parallel “wave” subagents</td><td>✅✅ Its core strength (graphs)</td></tr>
+<tr><td><strong>Long-term memory</strong></td><td>✅ Knowledge store (BM25+dense), connectors</td><td>➖ Session/workspace state</td><td>✅ Files on disk (PROJECT/PLAN/phase docs)</td><td>✅ Checkpointers + memory stores</td></tr>
+<tr><td><strong>Human-in-the-loop</strong></td><td>Chat-native</td><td>Review/approve in UI</td><td>✅ Explicit discuss/verify gates</td><td>✅ First-class (pause/inspect/edit state)</td></tr>
+<tr><td><strong>Tool use / code exec</strong></td><td>Tools + MCP + sandboxes</td><td>✅ Full: shell, browser, PRs</td><td>via host agent’s tools</td><td>You wire tools into nodes</td></tr>
+<tr><td><strong>Deployment</strong></td><td>Laptop/Mac mini/server, tunnel, channels</td><td>Laptop → cloud server (Docker)</td><td>N/A (runs in your editor/CLI)</td><td>Library → LangGraph Platform/Cloud</td></tr>
+<tr><td><strong>How “opinionated”</strong></td><td>Medium (batteries-included)</td><td>Medium-high (SWE loop)</td><td>High (prescribes the process)</td><td>Low (you decide everything)</td></tr>
+<tr><td><strong>Coding required to use</strong></td><td>Little (CLI/config)</td><td>Little (UI)</td><td>None (prompts)</td><td>A lot (it’s a library)</td></tr>
+<tr><td><strong>License / model</strong></td><td>Open source</td><td>Open source (+ hosted cloud)</td><td>Open source</td><td>Open source (+ paid platform)</td></tr>
+<tr><td><strong>Rough scale (2026)</strong></td><td>Emerging</td><td>~70k★, SWE-bench ~53%</td><td>~58k★, launched Dec 2025</td><td>v1.0, ~30k★, prod at Uber/LinkedIn/Klarna</td></tr>
+</tbody>
+</table>
+</div>
+<p>Legend: ✅ strong / built-in · ⚠️ partial or with caveats · ➖ not its focus (possible indirectly)</p>
+<hr>
+<h2 id="2-tool-by-tool"><a class="header" href="#2-tool-by-tool">2. Tool-by-tool</a></h2>
+<h3 id="openjarvis--your-local-personal-assistant"><a class="header" href="#openjarvis--your-local-personal-assistant">OpenJarvis — <em>your</em> local personal assistant</a></h3>
+<ul>
+<li><strong>What it’s for:</strong> a private AI that lives on your hardware and does <em>personal</em> work —
+chat, morning digests, deep research over your own documents, scheduled monitors,
+and a code assistant, reachable from Telegram/iMessage/Slack/WhatsApp, a desktop GUI,
+or an OpenAI-compatible HTTP API.</li>
+<li><strong>Standout features:</strong> local-by-default with 13+ inference engines (Ollama, MLX, vLLM,
+llama.cpp, LiteLLM, cloud…), a multi-channel gateway, a personal knowledge store, MCP
+tool support, operators/scheduler for automation, and trace-based learning.</li>
+<li><strong>Weak spots:</strong> not a specialized coding agent (OpenHands is stronger there); newer and
+smaller ecosystem; you assemble your own workflows rather than following a prescribed method.</li>
+<li><strong>Fits this machine perfectly:</strong> built to run exactly the local-model stack you already
+have (<code>qwen-122b</code> via LiteLLM). See <code>USING-OpenJarvis.md</code>.</li>
+</ul>
+<h3 id="openhands-formerly-opendevin--the-autonomous-software-engineer"><a class="header" href="#openhands-formerly-opendevin--the-autonomous-software-engineer">OpenHands (formerly OpenDevin) — the autonomous software engineer</a></h3>
+<ul>
+<li><strong>What it’s for:</strong> hand it a GitHub issue or task and it plans, writes code, runs the
+terminal, browses docs, fixes tests, and opens a PR — a full agentic dev loop in a
+sandboxed Docker environment.</li>
+<li><strong>Standout features:</strong> ~53%+ on SWE-bench Verified with strong models; V1 modular
+<strong>Software Agent SDK</strong> (event-sourced state, opt-in sandboxing, REST/WebSocket server);
+browser “Agent Canvas” UI; VS Code/VNC/browser workspaces; triggerable from Slack/GitHub.</li>
+<li><strong>Model support:</strong> Claude, GPT, Gemini, and open models (Llama, <strong>Qwen</strong>) via LiteLLM —
+so it <em>can</em> run against your local <code>qwen-122b</code>, though top scores come from frontier models.</li>
+<li><strong>Weak spots:</strong> heavier to run (Docker sandbox, ideally a server); focused on software
+engineering, not general personal-assistant tasks; cloud-server deployment is where it shines.</li>
+</ul>
+<h3 id="gsd-get-shit-done--the-spec-driven-process"><a class="header" href="#gsd-get-shit-done--the-spec-driven-process">GSD (Get Shit Done) — the spec-driven <em>process</em></a></h3>
+<ul>
+<li><strong>What it’s for:</strong> keeping <strong>large, multi-session projects coherent</strong>. It’s not a runtime;
+it’s a set of slash-command workflows for Claude Code (and OpenCode/Gemini CLI/Codex) that
+enforce a <strong>discuss → plan → execute → verify → ship</strong> cycle. <em>(Installed on this machine —
+see the <code>/gsd:*</code> commands and <code>.planning/</code>.)</em></li>
+<li><strong>The problem it solves:</strong> <em>context rot</em> — quality decay as one long session fills the
+context window. GSD splits work into <strong>phases</strong>, spawns <strong>fresh subagents</strong> with clean
+200k-token contexts, runs independent tasks in parallel “<strong>waves</strong>,” and makes <code>PLAN.md</code>
+files <em>the</em> executable instruction that subagents read directly.</li>
+<li><strong>Standout features:</strong> interview-driven spec generation, parallel research agents,
+goal-backward verification, persistent <code>.planning/</code> docs (PROJECT/REQUIREMENTS/MILESTONES,
+per-phase PLAN/RESEARCH/VERIFICATION). This machine’s config: <code>mode=yolo</code>, <code>depth=standard</code>,
+<code>parallelization=true</code>, <code>model_profile=balanced</code>.</li>
+<li><strong>Weak spots:</strong> it’s a methodology, so it <strong>inherits the host agent’s model/cost/privacy</strong>
+(Claude Code → cloud, unless you point the CLI at a local model); it governs <em>how you work</em>,
+it doesn’t itself run inference or ship a product runtime.</li>
+</ul>
+<h3 id="langgraph--the-build-it-yourself-orchestration-library"><a class="header" href="#langgraph--the-build-it-yourself-orchestration-library">LangGraph — the build-it-yourself orchestration library</a></h3>
+<ul>
+<li><strong>What it’s for:</strong> <strong>developers</strong> building custom, stateful, long-running agents. You model
+agent logic as a <strong>graph/state machine</strong>: nodes = actions (LLM calls, tools, sub-agents),
+edges = conditional control flow.</li>
+<li><strong>Standout features:</strong> durable execution with checkpointing (resume after crashes),
+first-class human-in-the-loop (inspect/modify state mid-run), native token streaming,
+single/multi/hierarchical agent topologies, built-in memory. Stable <strong>v1.0</strong> (late 2025),
+in production at Klarna, LinkedIn, Uber, Replit; DeltaChannel cuts checkpoint storage ~73,000×.</li>
+<li><strong>Model support:</strong> provider-agnostic through LangChain — including local models, so it can
+target your <code>qwen</code> endpoint.</li>
+<li><strong>Weak spots:</strong> it’s infrastructure — <strong>you write the code</strong>; no out-of-the-box assistant,
+coding agent, or UI. Maximum control, maximum effort.</li>
+</ul>
+<hr>
+<h2 id="3-how-they-relate-they-can-stack"><a class="header" href="#3-how-they-relate-they-can-stack">3. How they relate (they can stack)</a></h2>
+<p>These aren’t purely competitors — some compose:</p>
+<ul>
+<li><strong>GSD + OpenHands / Claude Code:</strong> GSD orchestrates the <em>process</em>; the coding agent does
+the <em>work</em>. (There’s literally a <code>gsd-openhands</code> project on this machine.)</li>
+<li><strong>LangGraph inside a product:</strong> you could build OpenJarvis-like or OpenHands-like behavior
+<em>with</em> LangGraph as the engine underneath.</li>
+<li><strong>OpenJarvis as the local brain:</strong> its OpenAI-compatible server can back other tools; and
+OpenHands/LangGraph can point at the <em>same</em> local <code>qwen</code> endpoint OpenJarvis uses.</li>
+</ul>
+<p>The genuine overlaps: <strong>OpenJarvis ↔ OpenHands</strong> both “run agents that do work” (personal vs.
+software-engineering focus); <strong>GSD ↔ LangGraph</strong> both address orchestration/state (a prescribed
+<em>method</em> vs. a programmable <em>library</em>).</p>
+<hr>
+<h2 id="4-which-should-you-use-given-your-local-qwen-mac"><a class="header" href="#4-which-should-you-use-given-your-local-qwen-mac">4. Which should you use? (given your local-Qwen Mac)</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Your goal</th><th>Best pick</th><th>Why</th></tr>
+</thead>
+<tbody>
+<tr><td>A private assistant on your own hardware (chat, digests, research, reachable from your phone)</td><td><strong>OpenJarvis</strong></td><td>Purpose-built local-first; already wired to your <code>qwen-122b</code></td></tr>
+<tr><td>“Fix this bug / build this feature” autonomously, PRs and all</td><td><strong>OpenHands</strong></td><td>Purpose-built SWE agent; can use your local Qwen via LiteLLM</td></tr>
+<tr><td>Keep a big, multi-week build coherent without context rot</td><td><strong>GSD</strong></td><td>Prescribes the phase/verify process; already installed here</td></tr>
+<tr><td>Build your <em>own</em> bespoke agent with tight control over state &amp; flow</td><td><strong>LangGraph</strong></td><td>Low-level graph engine; program exactly what you need</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Rules of thumb</strong></p>
+<ul>
+<li>Want a <em>product</em> to use → OpenJarvis (personal) or OpenHands (coding).</li>
+<li>Want a <em>process</em> to follow → GSD.</li>
+<li>Want a <em>library</em> to build on → LangGraph.</li>
+<li><strong>Privacy / offline matters most</strong> → OpenJarvis is the only one designed local-first;
+the others <em>can</em> use local models but aren’t built around that goal.</li>
+</ul>
+<hr>
+<h2 id="sources-1"><a class="header" href="#sources-1">Sources</a></h2>
+<ul>
+<li>OpenHands: <a href="https://www.openhands.dev/">openhands.dev</a> · <a href="https://github.com/OpenHands/OpenHands">GitHub</a> · <a href="https://arxiv.org/html/2511.03690v1">Software Agent SDK (arXiv)</a> · <a href="https://docs.openhands.dev/sdk">SDK docs</a></li>
+<li>LangGraph: <a href="https://www.langchain.com/langgraph">langchain.com/langgraph</a> · <a href="https://github.com/langchain-ai/langgraph">GitHub</a> · <a href="https://docs.langchain.com/oss/python/langgraph/overview">Docs</a> · <a href="https://toolbrain.net/blog/langgraph-review-2026/">Review 2026</a></li>
+<li>GSD: <a href="https://github.com/gsd-build/get-shit-done">GitHub (gsd-build/get-shit-done)</a> · <a href="https://gsd-build-get-shit-done.mintlify.app/introduction">Docs</a> · <a href="https://www.augmentcode.com/learn/gsd-58k-stars-claude-code">Augment Code writeup</a> · <a href="https://www.mindstudio.ai/blog/gsd-framework-claude-code-clean-context-phases">MindStudio guide</a></li>
+<li>OpenJarvis: <a href="https://github.com/open-jarvis/OpenJarvis">GitHub (open-jarvis/OpenJarvis)</a> + local install docs (<code>SETUP-OpenJarvis.md</code>, <code>USING-OpenJarvis.md</code>, <code>LLM-STACK-REFERENCE.md</code>)</li>
+</ul>
+<p><em>Compiled 2026-07-01. Star counts / benchmark numbers are point-in-time and will drift.</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-c22b7243.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

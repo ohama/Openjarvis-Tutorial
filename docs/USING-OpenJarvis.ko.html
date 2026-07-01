@@ -1,0 +1,445 @@
+<!DOCTYPE HTML>
+<html lang="ko" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>3. 사용법 - OpenJarvis Tutorial</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Apple Silicon(M4 Max)에서 로컬 Qwen(122B/35B) + LiteLLM으로 OpenJarvis를 구축·운용하는 실전 튜토리얼">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-0392ca55.css">
+        <link rel="stylesheet" href="css/chrome-fc474251.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-93084edc.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-d0e53a3e.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">OpenJarvis Tutorial</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/ohama/Openjarvis-Tutorial" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/ohama/Openjarvis-Tutorial/edit/master/./USING-OpenJarvis.ko.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="openjarvis-사용하기--상세-가이드"><a class="header" href="#openjarvis-사용하기--상세-가이드">OpenJarvis 사용하기 — 상세 가이드</a></h1>
+<p>이 머신에 설치된 OpenJarvis를 실제로 <em>사용하는</em> 방법 (로컬
+<code>qwen-122b</code> / <code>qwen-35b</code>에 연결됨 — 설치 방법은 <code>SETUP-OpenJarvis.md</code>를,
+모델 엔드포인트 세부 정보는 <code>LLM-STACK-REFERENCE.md</code>를 참고하세요).</p>
+<ul>
+<li><strong>CLI 바이너리:</strong> <code>/Users/ohama/projs/openjarvis-test/OpenJarvis/.venv/bin/jarvis</code></li>
+<li><strong>설정:</strong> <code>~/.openjarvis/config.toml</code> (모델 <code>qwen-122b</code>, 엔진 → LiteLLM <code>:4000</code>, API 서버 포트 <code>8090</code>)</li>
+<li>이 문서 전반에서 <code>jarvis</code>는 해당 venv 바이너리를 의미합니다. 그냥 <code>jarvis</code>만 입력해서
+실행하려면 <code>source .venv/bin/activate</code>를 실행하거나 PATH에 심볼릭 링크를 걸어두세요.</li>
+</ul>
+<blockquote>
+<p><strong>“아이폰에서 사용할 수 있나요?“에 대한 답변을 포함합니다 — 7번 섹션을 참고하세요.</strong></p>
+</blockquote>
+<hr>
+<h2 id="1-가장-빠르게-사용하는-방법"><a class="header" href="#1-가장-빠르게-사용하는-방법">1. 가장 빠르게 사용하는 방법</a></h2>
+<pre><code class="language-bash">cd /Users/ohama/projs/openjarvis-test/OpenJarvis
+
+# 단발성 질문 (기본 에이전트 + qwen-122b 사용)
+.venv/bin/jarvis ask "Summarize the theory of relativity in 3 bullets"
+
+# 대화형 멀티턴 대화
+.venv/bin/jarvis chat
+
+# 신규 사용자를 위한 가이드 설정 / 기능 둘러보기
+.venv/bin/jarvis quickstart
+
+# 진단 — 설정, 엔진 접근 가능 여부, 모델 등을 점검
+.venv/bin/jarvis doctor
+</code></pre>
+<p><code>ask</code>는 기본적으로 답변을 스트리밍합니다. 하나의 블록으로 받으려면 <code>--no-stream</code>을,
+원시 결과 객체를 받으려면 (스크립팅에 유용) <code>--json</code>을 추가하세요.</p>
+<hr>
+<h2 id="2-jarvis-ask--핵심-명령"><a class="header" href="#2-jarvis-ask--핵심-명령">2. <code>jarvis ask</code> — 핵심 명령</a></h2>
+<p>자주 쓰는 옵션 (<code>jarvis ask --help</code> 기준):</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>플래그</th><th>용도</th></tr>
+</thead>
+<tbody>
+<tr><td><code>-m, --model</code></td><td>모델을 재정의, 예: 더 빠른 답변을 위한 <code>-m qwen-35b</code></td></tr>
+<tr><td><code>-a, --agent</code></td><td>에이전트 선택: <code>simple</code> (싱글턴, 도구 없음), <code>orchestrator</code> (멀티턴 + 도구), <code>react</code>, <code>openhands</code>. <code>--agent ''</code> = 모델과 직접 대화</td></tr>
+<tr><td><code>--tools</code></td><td>이번 호출에 사용할 도구를 제한, 예: <code>--tools calculator,think</code></td></tr>
+<tr><td><code>-t, --temperature</code> / <code>--max-tokens</code></td><td>샘플링 재정의</td></tr>
+<tr><td><code>--research</code></td><td>인덱싱된 개인 지식(BM25 + 임베딩)으로부터 답변</td></tr>
+<tr><td><code>-i, --image FILE</code> / <code>-S, --screen</code></td><td>비전 모델에 이미지 / 스크린샷 전송</td></tr>
+<tr><td><code>--profile</code></td><td>해당 호출의 지연 시간 / 토큰 / 에너지 텔레메트리 출력</td></tr>
+<tr><td><code>--no-context</code></td><td>메모리 컨텍스트 주입 건너뛰기</td></tr>
+</tbody>
+</table>
+</div>
+<p>예시:</p>
+<pre><code class="language-bash">.venv/bin/jarvis ask -m qwen-35b "quick: capital of Japan?"
+.venv/bin/jarvis ask --agent simple --tools calculator "what is 19% of 4,320?"
+.venv/bin/jarvis ask -S "what's on my screen right now?"      # 비전 모델 필요
+</code></pre>
+<hr>
+<h2 id="3-에이전트-도구-스킬"><a class="header" href="#3-에이전트-도구-스킬">3. 에이전트, 도구, 스킬</a></h2>
+<ul>
+<li>**에이전트(Agents)**는 요청이 처리되는 <em>방식</em>을 결정합니다. <code>simple</code>은 그저 답변만 하고,
+<code>orchestrator</code>는 여러 턴에 걸쳐 도구를 호출할 수 있으며, <code>openhands</code>/<code>react</code>는 코드/에이전트
+스타일입니다. 기본값은 <code>config.toml</code>(<code>[agent] default_agent</code>)에서 설정하거나 호출마다 재정의하세요.</li>
+<li><strong>영속 에이전트(Persistent agents):</strong> <code>jarvis agents</code> — 고유한 페르소나/설정을 가진 이름 있는
+에이전트를 생성하고, 살펴보고, 대화할 수 있습니다.</li>
+<li>**도구(Tools)**는 에이전트가 호출할 수 있는 기능입니다 (<code>code_interpreter</code>, <code>file_read</code>,
+<code>file_write</code>, <code>shell_exec</code>, <code>web_search</code>, <code>calculator</code>, <code>think</code>, 메모리/지식
+검색 등). <code>jarvis tool list</code>로 목록을 확인하세요. 호출마다 <code>--tools</code>로, 또는
+전역적으로 <code>[tools] enabled = [...]</code>에서 활성화합니다.</li>
+<li><strong>스킬(Skills):</strong> <code>jarvis skill</code> — 재사용 가능한 저장된 기능. <strong>MCP 서버:</strong> <code>jarvis add</code>로
+외부 도구 서버를 추가합니다 (그리고 <code>[tools.mcp] enabled = true</code>).</li>
+</ul>
+<blockquote>
+<p>참고: 일부 도구는 추가 설치가 필요합니다. <code>web_search</code>는 search extra를 필요로 합니다:
+<code>VIRTUAL_ENV=.venv uv pip install -e ".[server,tools-search]"</code>.</p>
+</blockquote>
+<hr>
+<h2 id="4-메모리-데이터-연결-및-딥-리서치"><a class="header" href="#4-메모리-데이터-연결-및-딥-리서치">4. 메모리, 데이터 연결 및 딥 리서치</a></h2>
+<p>OpenJarvis는 <em>당신의</em> 데이터를 대상으로 답변할 수 있습니다:</p>
+<pre><code class="language-bash"># 데이터 소스 연결 (Gmail, Obsidian, 로컬 폴더 등)
+.venv/bin/jarvis connect            # 사용 가능한 커넥터 확인
+
+# 문서를 지식 저장소에 인덱싱
+.venv/bin/jarvis memory index ~/Documents/papers/
+
+# 인덱싱된 데이터를 검색하는 질문
+.venv/bin/jarvis ask --research "what did the Q2 planning notes conclude?"
+
+# 또는 로컬 소스를 감지하고 리서치를 실행하는 단발성 자동 설정
+.venv/bin/jarvis deep-research-setup
+</code></pre>
+<p>메모리/지식은 <code>~/.openjarvis/*.db</code>에 저장됩니다 (설정에 따라 기본적으로 sqlite).</p>
+<hr>
+<h2 id="5-자동화--스케줄러-오퍼레이터-다이제스트-워크플로"><a class="header" href="#5-자동화--스케줄러-오퍼레이터-다이제스트-워크플로">5. 자동화 — 스케줄러, 오퍼레이터, 다이제스트, 워크플로</a></h2>
+<ul>
+<li><code>jarvis digest</code> — “모닝 다이제스트” (다이제스트 설정/에이전트 필요).</li>
+<li><code>jarvis scheduler</code> — 반복 작업 예약 (cron 스타일).</li>
+<li><code>jarvis operators</code> — 영속적이고 예약된 자율 에이전트 (예: 모니터).</li>
+<li><code>jarvis workflow</code> — 다단계 워크플로 목록/실행/검사.</li>
+</ul>
+<p>이러한 기능은 Jarvis를 온디맨드 어시스턴트에서 백그라운드 어시스턴트로 바꿔줍니다.</p>
+<hr>
+<h2 id="6-서버--데몬으로-실행하기-원격-및-앱-접근의-기반"><a class="header" href="#6-서버--데몬으로-실행하기-원격-및-앱-접근의-기반">6. 서버 / 데몬으로 실행하기 (원격 및 앱 접근의 기반)</a></h2>
+<p>OpenJarvis는 <strong>OpenAI 호환 HTTP API</strong>를 노출하고 백그라운드 데몬으로 실행할 수 있습니다.</p>
+<pre><code class="language-bash"># 포그라운드 서버 (Ctrl-C로 중지)
+.venv/bin/jarvis serve                       # 설정값에 바인딩: 127.0.0.1:8090
+
+# 백그라운드 데몬 + 라이프사이클
+.venv/bin/jarvis start                        # 데몬 시작
+.venv/bin/jarvis status                       # 실행 중인가?
+.venv/bin/jarvis restart / stop
+</code></pre>
+<p>서빙을 시작하면 표준 OpenAI API를 사용하므로, LiteLLM을 가리키던 것과 마찬가지로
+<strong>다른 소프트웨어가 이를 가리키도록</strong> 할 수 있습니다:</p>
+<pre><code class="language-bash">curl http://localhost:8090/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"qwen-122b","messages":[{"role":"user","content":"hi"}]}'
+</code></pre>
+<blockquote>
+<p><code>server</code> extra가 필요합니다 (여기에는 이미 설치됨). 기본적으로 루프백에만
+바인딩됩니다 — 다른 기기에서 접근하려면 다음 섹션을 참고하세요.</p>
+</blockquote>
+<hr>
+<h2 id="7-아이폰에서-사용할-수-있나요"><a class="header" href="#7-아이폰에서-사용할-수-있나요">7. 아이폰에서 사용할 수 있나요?</a></h2>
+<p><strong>짧은 답변: 예 — 다만 전용 App Store 앱을 통해서는 아닙니다.</strong> OpenJarvis는
+데스크톱 GUI(<code>.dmg</code>/<code>.exe</code>/<code>.deb</code>/…)와 CLI를 제공하며, <strong>네이티브 iOS 앱은 없습니다</strong>.
+아이폰에서 사용하려면 이 Mac에서 실행 중인 인스턴스에 세 가지 방법 중 하나로 연결합니다.
+어떤 방법이든 Mac이 <strong>켜져 있고 해당 데몬이 실행 중</strong>이어야 합니다.</p>
+<h3 id="옵션-a--메시징-채널-가장-쉬움-네이티브에-가까운-느낌--권장"><a class="header" href="#옵션-a--메시징-채널-가장-쉬움-네이티브에-가까운-느낌--권장">옵션 A — 메시징 채널 (가장 쉬움, 네이티브에 가까운 느낌) ✅ 권장</a></h3>
+<p>OpenJarvis에는 **멀티채널 게이트웨이(multi-channel gateway)**가 있습니다: 아이폰에 이미 설치된
+메시징 앱 안에서 Jarvis와 대화하면, 로컬 <code>qwen-122b</code>를 사용해 응답합니다.</p>
+<p>지원 채널에는 <strong>Telegram, WhatsApp, Slack, Discord, iMessage/SMS</strong>가 포함됩니다
+(iMessage/SMS는 서드파티 <strong>SendBlue</strong> 서비스를 통해).</p>
+<pre><code class="language-bash">.venv/bin/jarvis channel list          # 채널 유형 확인
+.venv/bin/jarvis gateway start         # 멀티채널 게이트웨이 데몬 실행
+.venv/bin/jarvis gateway status
+.venv/bin/jarvis channels imessage-start &lt;CHAT_IDENTIFIER&gt;   # iMessage 경로
+</code></pre>
+<ul>
+<li><strong>Telegram</strong>이 대개 가장 간단합니다: 봇 토큰을 만들고, 채널 설정에 넣은 뒤,
+<code>gateway start</code>를 실행하고, 아이폰의 Telegram 앱에서 봇에게 메시지를 보내면 됩니다.</li>
+<li><strong>iMessage</strong>는 기본 메시지 앱에서 Jarvis에게 문자를 보낼 수 있지만, SendBlue
+계정(유료 서드파티)이 필요합니다 — 설정이 더 번거롭습니다.</li>
+<li><strong>아이폰에 이 방법이 가장 좋은 이유:</strong> 네트워크에 아무것도 노출할 필요가 없고,
+인터넷만 있으면 어디서든 동작하며, UI가 이미 신뢰하는 채팅 앱입니다.</li>
+</ul>
+<h3 id="옵션-b--네트워크를-통해-http-api-접근-"><a class="header" href="#옵션-b--네트워크를-통해-http-api-접근-">옵션 B — 네트워크를 통해 HTTP API 접근 🌐</a></h3>
+<p>서버를 LAN에 바인딩해서 실행하고 아이폰에서 접속합니다. 이 방법에는 키가 필요합니다
+(시작 시 키 없이 루프백이 아닌 바인딩을 <strong>거부</strong>합니다):</p>
+<pre><code class="language-bash">.venv/bin/jarvis auth generate-key                  # API 키 생성
+.venv/bin/jarvis serve --host 0.0.0.0 --port 8090   # LAN에 바인딩
+</code></pre>
+<p>그런 다음 아이폰에서 (같은 Wi-Fi):</p>
+<ul>
+<li>아무 <strong>OpenAI 호환 iOS 채팅 앱</strong>(또는 “Get Contents of URL” POST를 사용하는 Apple
+<strong>Shortcuts</strong>)을 <code>http://&lt;mac-LAN-IP&gt;:8090/v1</code>, 모델 <code>qwen-122b</code>로 가리키고,
+API 키를 <code>Authorization: Bearer &lt;key&gt;</code>로 전송합니다.</li>
+<li>또는 GUI/웹 엔드포인트가 서빙 중이라면 Safari에서 그냥 <code>http://&lt;mac-LAN-IP&gt;:8090/</code>를 엽니다.</li>
+</ul>
+<p>Mac의 LAN IP는 <code>ipconfig getifaddr en0</code>로 확인합니다. 이 방법은 아이폰이 Mac과 <strong>같은
+네트워크</strong>에 있을 때만 동작합니다. <strong>외부에서</strong> 접근하려면 <strong>Tailscale</strong> 같은 프라이빗
+메시 VPN을 사용하세요 (두 기기에 모두 설치하고, LAN IP 대신 Mac의 Tailscale IP를 사용) —
+공용 인터넷에 포트를 노출하지 않습니다.</p>
+<h3 id="옵션-c--공용-터널-어디서든-접근-"><a class="header" href="#옵션-c--공용-터널-어디서든-접근-">옵션 C — 공용 터널 (어디서든 접근) 🚇</a></h3>
+<p>OpenJarvis에는 내장 Cloudflare 터널이 있습니다:</p>
+<pre><code class="language-bash">.venv/bin/jarvis serve --host 127.0.0.1 --port 8090   # 루프백 유지
+.venv/bin/jarvis tunnel --port 8090                   # Cloudflare를 통해 노출
+.venv/bin/jarvis tunnel status
+</code></pre>
+<p>이렇게 하면 아이폰에서 어디서든 열 수 있는 공용 HTTPS URL이 생깁니다. 이 방법을 쓸 때는
+<strong>항상 API 키를 활성화</strong>하세요 — 터널은 URL을 아는 누구나 접근할 수 있습니다.</p>
+<h3 id="어떤-것을-선택해야-할까"><a class="header" href="#어떤-것을-선택해야-할까">어떤 것을 선택해야 할까?</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>원하는 것</th><th>사용</th></tr>
+</thead>
+<tbody>
+<tr><td>가장 간단하고, 채팅 앱 느낌이며, 어디서든 동작</td><td><strong>A — Telegram 채널</strong></td></tr>
+<tr><td>메시지 앱에서 Jarvis에게 문자 보내기</td><td>A — iMessage (SendBlue 필요)</td></tr>
+<tr><td>OpenAI 호환 iOS 앱 / Shortcuts를 집에서 사용</td><td><strong>B — LAN 서버 + 키</strong></td></tr>
+<tr><td>위와 같으나 외부에서도 프라이빗하게</td><td>B + <strong>Tailscale</strong></td></tr>
+<tr><td>어디서든 접근 가능한 공용 URL</td><td><strong>C — Cloudflare 터널</strong> (+ 키)</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="아이폰-접근-시-보안-유의사항"><a class="header" href="#아이폰-접근-시-보안-유의사항">아이폰 접근 시 보안 유의사항</a></h3>
+<ul>
+<li>API 키 없이 <code>0.0.0.0</code>에 바인딩하거나 터널을 열지 <strong>마세요</strong>.</li>
+<li>라우터의 포트 포워딩보다 Tailscale을 선호하세요.</li>
+<li>프롬프트가 Mac을 벗어나는 것은 선택한 채널/터널 제공자로 향할 때뿐이며, 모델
+자체는 여전히 로컬의 <code>qwen-122b</code>에서 실행됩니다.</li>
+</ul>
+<hr>
+<h2 id="8-유지-관리"><a class="header" href="#8-유지-관리">8. 유지 관리</a></h2>
+<pre><code class="language-bash">.venv/bin/jarvis config show      # 어떤 설정이 로드되었는지
+.venv/bin/jarvis doctor           # 상태 점검
+.venv/bin/jarvis scan             # 환경에 대한 개인정보/보안 감사
+.venv/bin/jarvis telemetry ...    # 과거 호출의 지연 시간/토큰/에너지 통계
+.venv/bin/jarvis self-update      # 업그레이드 (또는 SETUP 문서의 git/uv 방법 사용)
+</code></pre>
+<p><strong>이 폴더의 관련 문서:</strong></p>
+<ul>
+<li><code>SETUP-OpenJarvis.md</code> — 이 설치가 어떻게 구성되었는지 (그리고 다시 하는 방법)</li>
+<li><code>LLM-STACK-REFERENCE.md</code> — OpenAI 호환 앱을 위한 LiteLLM → Qwen 엔드포인트 레퍼런스</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="LLM-STACK-REFERENCE.ko.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="TELEGRAM-Channel.ko.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="LLM-STACK-REFERENCE.ko.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="TELEGRAM-Channel.ko.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-c22b7243.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
